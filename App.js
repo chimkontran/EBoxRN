@@ -1,8 +1,6 @@
 import React from 'react';
 import {
 	AppRegistry,
-	Text,
-	View
 } from 'react-native';
 
 import { 
@@ -10,25 +8,21 @@ import {
 	TabNavigator 
 } from 'react-navigation';
 
-import ManageScreen from './src/screens/ManageScreen';
-import ScheduleScreen from './src/screens/ScheduleScreen';
-import ReportScreen from './src/screens/ReportScreen';
-import SettingsScreen from './src/screens/SettingsScreen';
-import UserScreen from './src/screens/UserScreen';
+import Constants from 'eboxRN/src/Constants';
 
 const MainNavigator = TabNavigator({
-	Manage: { screen: ManageScreen },
-	Schedule: { screen: ScheduleScreen },
-	Report: { screen: ReportScreen },
-	Settings: { screen: SettingsScreen },
+	Manage: { screen: Constants.screens.ManageScreen },
+	Schedule: { screen: Constants.screens.ScheduleScreen },
+	Report: { screen: Constants.screens.ReportScreen },
+	Settings: { screen: Constants.screens.SettingsScreen },
 }, {
 	tabBarOptions: {
     	labelStyle: {
 		    fontSize: 11,
 		},
 		indicatorStyle: {
-			backgroundColor: '#e91e63'
-		}
+			backgroundColor: Constants.colors.accent
+		},
 	},
 });
 MainNavigator.navigationOptions = {
@@ -37,7 +31,16 @@ MainNavigator.navigationOptions = {
 
 const eboxRN = StackNavigator({
 	Main: { screen: MainNavigator },
-	User: { screen: UserScreen },
+	User: { screen: Constants.screens.UserScreen },
+}, {
+	navigationOptions: {
+		header: {
+			style: {
+				backgroundColor: Constants.colors.darkPrimary,
+			},
+			tintColor: 'white'
+		}
+	}
 });
 
 AppRegistry.registerComponent('eboxRN', () => eboxRN);

@@ -3,9 +3,9 @@ import {
 	StyleSheet
 } from 'react-native';
 
-export default const styles = StyleSheet.create({
-  icon: {
-    width: 24,
-    height: 24,
-  },
+export default MainStyles = StyleSheet.create({
+	icon: {
+		width: 24,
+		height: 24,
+	},
 });
