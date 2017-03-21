@@ -12,7 +12,12 @@ import Constants from 'eboxRN/src/Constants';
 export default class SettingsScreen extends React.Component {
 	static navigationOptions = {
 		tabBar: {
-			
+			icon: ({ tintColor }) => (
+		        <Image
+		            source={Constants.images.settingsIcon}
+		            style={[Constants.styles.MainStyles.icon, {tintColor: tintColor}]}
+		        />
+	        ),
 		}
 	}
 	render() {

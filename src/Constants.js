@@ -23,7 +23,11 @@ const colors = {
 }
 
 const images = {
-	logo: require('eboxRN/src/images/logo.png')
+	logo: require('eboxRN/src/images/logo.png'),
+	outlinedLogo: require('eboxRN/src/images/outlinedLogo.png'),
+	alarmIcon: require('eboxRN/src/images/alarmIcon.png'),
+	reportIcon: require('eboxRN/src/images/reportIcon.png'),
+	settingsIcon: require('eboxRN/src/images/settingsIcon.png'),
 }
 
 const styles = {

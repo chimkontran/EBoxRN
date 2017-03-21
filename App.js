@@ -17,16 +17,24 @@ const MainNavigator = TabNavigator({
 	Settings: { screen: Constants.screens.SettingsScreen },
 }, {
 	tabBarOptions: {
+		style: {
+			backgroundColor: Constants.colors.darkPrimary
+		},
     	labelStyle: {
 		    fontSize: 11,
 		},
 		indicatorStyle: {
 			backgroundColor: Constants.colors.accent
 		},
+		showIcon: true,
+		showLabel: true
 	},
 });
 MainNavigator.navigationOptions = {
-	title: 'EBox'
+	title: 'EBox',
+	header: {
+		visible: false
+	}
 }
 
 const eboxRN = StackNavigator({
@@ -36,7 +44,7 @@ const eboxRN = StackNavigator({
 	navigationOptions: {
 		header: {
 			style: {
-				backgroundColor: Constants.colors.darkPrimary,
+				backgroundColor: Constants.colors.primary,
 			},
 			tintColor: 'white'
 		}
