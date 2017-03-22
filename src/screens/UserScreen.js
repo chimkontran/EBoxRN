@@ -12,7 +12,7 @@ export default class UserScreen extends React.Component {
 	render() {
 		return (
 			<View>
-				<Text>Hello User!</Text>
+				<Text>Hello abc User!</Text>
 			</View>
 			);
 	}
