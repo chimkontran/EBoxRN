@@ -28,11 +28,11 @@ export default class LoginForm extends React.Component {
 					'Accept': 'application/json',
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
-				body: 	"email=" + this.state.email +
-						"&password=" + this.state.pword
+				body: ("email="+this.state.email+
+					"&password="+this.state.pword)
 
 			});
-			
+			console.log("email="+this.state.email+"&password="+this.state.pword)
 			let res = await response.text();
 			res = JSON.parse(res);
 			console.log("Response is: " + res.mess)
@@ -71,7 +71,7 @@ export default class LoginForm extends React.Component {
 				/>
 
 				<TextInput
-					onChangeText={ (text)=> this.setState({password:text}) }
+					onChangeText={ (text)=> this.setState({pword:text}) }
 					placeholder="Password" secureTextEntry={true}
 				/>
 				
