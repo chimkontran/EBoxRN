@@ -1,6 +1,8 @@
 import React from 'react';
 import {
 	AppRegistry,
+	View,
+	Button
 } from 'react-native';
 
 import { 
@@ -9,6 +11,7 @@ import {
 } from 'react-navigation';
 
 import Constants from 'eboxRN/src/Constants';
+import  UserUtils from 'eboxRN/src/utils/UserUtils';
 
 const MainNavigator = TabNavigator({
 	Manage: { screen: Constants.screens.ManageScreen },
@@ -17,6 +20,8 @@ const MainNavigator = TabNavigator({
 	Settings: { screen: Constants.screens.SettingsScreen },
 }, {
 	tabBarOptions: {
+		activeBackgroundColor: "white",
+		inActiveBackgroundColor: "white",
 		style: {
 			backgroundColor: Constants.colors.darkPrimary
 		},
@@ -24,7 +29,8 @@ const MainNavigator = TabNavigator({
 		    fontSize: 11,
 		},
 		indicatorStyle: {
-			backgroundColor: Constants.colors.accent
+			backgroundColor: Constants.colors.accent,
+			height: "5%",
 		},
 		showIcon: true,
 		showLabel: true
@@ -37,7 +43,7 @@ MainNavigator.navigationOptions = {
 	}
 }
 
-const eboxRN = StackNavigator({
+const AppNavigator = StackNavigator({
 	Main: { screen: MainNavigator },
 	User: { screen: Constants.screens.UserScreen },
 }, {
@@ -50,5 +56,31 @@ const eboxRN = StackNavigator({
 		}
 	}
 });
+
+export default class eboxRN extends React.Component {
+	constructor(props) {
+	    super(props);
+	    this.state = {
+	    	loggedIn: false
+	    };
+	    this.setLoginState = this.setLoginState.bind(this);
+    }
+    setLoginState(loggedIn){
+    	this.setState({loggedIn: loggedIn})
+    }
+
+	render(){
+		var screen = (<AppNavigator/>);
+		if (!this.state.loggedIn){
+			screen = (<View>
+				<Button 
+				onPress={()=>UserUtils.checkUser(this.setLoginState)}
+				title="asd"
+				/>
+				</View>)
+		} 
+		return screen;
+	}
+}
 
 AppRegistry.registerComponent('eboxRN', () => eboxRN);

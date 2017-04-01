@@ -10,6 +10,7 @@ export default class UserScreen extends React.Component {
 		title: "User"
 	}
 	render() {
+		console.log(this);
 		return (
 			<View>
 				<Text>Hello User!</Text>
