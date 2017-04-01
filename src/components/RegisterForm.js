@@ -3,18 +3,21 @@ import {
   StyleSheet,
   TextInput,
   TouchableHighlight,
+  AsyncStorage,
   Text,
   View
 } from 'react-native';
 
-export default class RegisterForm extends React.Component {
+const ACCESS_TOKEN = 'access_token';
+
+class RegisterForm extends React.Component {
 	constructor() {
 		super();
 
 		this.state = {
 			email: "",
-			pword: "",
-			pword_confirm:"",
+			password: "",
+			password_confirm:"",
 			errorMess:"",
 		}
 	}
@@ -22,7 +25,7 @@ export default class RegisterForm extends React.Component {
 	async onRegisterPressed(){
 		try{
 
-			// console.log(this.state.pword == this.state.pword_confirm)
+			// console.log(this.state.password == this.state.password_confirm)
 			let response = await fetch('http://139.59.102.199/API/Users/Register', {
 				method: 'POST',
 				headers: {
@@ -30,33 +33,33 @@ export default class RegisterForm extends React.Component {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
 				body: "email=" + this.state.email +
-						"&password=" + this.state.pword +
-						"&confirm-password=" + this.state.pword_confirm
+					"&password=" + this.state.password +
+					"&confirm-password=" + this.state.password_confirm
 
 			});
 			
 			let res = await response.text();
 			res = JSON.parse(res);
-			console.log("Response is: " + res.mess)	
 
 			if (res.status == "successful"){
-				// let user log in
+				// Handle success
+				this.setState({errorMess:""});
+
+				let accessToken = res; // res.status
+				console.log("accessToken: " + accessToken);
+				// store accesstoken in AsyncStorage
+				// this.storeToken(accessToken);
 			}
 			else {
-				this.setState({errorMess:res.mess})
+				// Handle error
+				this.setState({errorMess:res.mess});
+				console.log("errorMess: " + this.state.errorMess);
+				// let error = errorMess;
+				// throw error;
 			}
 
-			///// catch errors
-			if (response.status >= 200 && response.status < 300) {
-				// print input
-				// console.log("Response is: " + res)		
-			} else {
-				let errors = res;
-				console.log(errors)
-			}
-
-		} catch(errors) {
-			console.log(errors)
+		} catch(error) {
+			console.log("error: " + error);
 		}
 	}
 
@@ -72,12 +75,12 @@ export default class RegisterForm extends React.Component {
 				/>
 				
 				<TextInput
-					onChangeText={(val) => this.setState({pword:val})}
+					onChangeText={(val) => this.setState({password:val})}
 					secureTextEntry={true} placeholder="Password"
 				/>
 				
 				<TextInput
-					onChangeText={(val) => this.setState({pword_confirm:val})}
+					onChangeText={(val) => this.setState({password_confirm:val})}
 					secureTextEntry={true} placeholder="Confirm password"
 				/>
 
@@ -124,3 +127,5 @@ const styles = StyleSheet.create({
     marginTop: 20
   }
 });
+
+export default RegisterForm

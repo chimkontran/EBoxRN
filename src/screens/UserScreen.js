@@ -4,6 +4,7 @@ import {
   TextInput,
   TouchableHighlight,
   Text,
+  AsyncStorage,
   View
 } from 'react-native';
 
@@ -14,14 +15,41 @@ export default class UserScreen extends React.Component {
 	static navigationOptions = {
 		title: "User"
 	}
+	// constructor()
+	// {
+	// 	super();
+	// 	this.state = {
+	// 		token: null;
+	// 	}
+	// }
 
+	componentWillMount(){
+		var getToken = this._loadToken.done();
+		console.log("Get token in userscreen: " + getToken)
+	}
+
+	_loadToken = async () => {
+		const token = await AsyncStorage.getItem('token');
+	}
 
 	render(){
 		var form;
-		if (true) {
+		if (this.getToken != null) {
 			// form = (<RegisterForm/>)
 			form = (<LoginForm/>)
+			return form
 		}
-		return form
+		else
+		{
+			form = (<RegisterForm/>)
+			return form
+		}
+		
+		// if (true) {
+		// 	// form = (<RegisterForm/>)
+		// 	form = (<LoginForm/>)
+		// 	return form
+		// }
+		
 	}
 }

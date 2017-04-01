@@ -3,7 +3,8 @@ import {
   StyleSheet,
   TextInput,
   TouchableHighlight,
-  Text,
+  AsyncStorage,
+  Text, 
   View
 } from 'react-native';
 
@@ -13,15 +14,26 @@ export default class LoginForm extends React.Component {
 
 		this.state = {
 			email: "",
-			pword: "",
+			password: "",
 			errorMess:"",
-		}
+			token:""
+		}		
+	}
+
+	componentWillMount(){
+		this._checkAsyncStorage().done();
+	}
+
+	_checkAsyncStorage = async () => {
+
+		const token = await AsyncStorage.getItem('token');
+		this.setState({token: token});
+		console.log("Get from state in loginform: " + this.state.token);
 	}
 
 	async onLoginPressed() {
 		try{
-
-			// console.log(this.state.pword == this.state.pword_confirm)
+			// console.log(this.state.password == this.state.password_confirm)
 			let response = await fetch('http://139.59.102.199/API/Users/Login', {
 				method: 'POST',
 				headers: {
@@ -29,33 +41,36 @@ export default class LoginForm extends React.Component {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
 				body: ("email="+this.state.email+
-					"&password="+this.state.pword)
+					"&password="+this.state.password)
 
 			});
-			console.log("email="+this.state.email+"&password="+this.state.pword)
+			// console.log("email="+this.state.email+"&password="+this.state.password)
+			
 			let res = await response.text();
 			res = JSON.parse(res);
-			console.log("Response is: " + res.mess)
+			// console.log("Response is: " + res.mess)
+
 
 			if (res.status == "successful"){
-				// let user log in
+			// Handle success
+				this.setState({errorMess:""});
+				let accessToken = res; // res.status
+
+				console.log("accessToken: " + accessToken.data._id);
+				AsyncStorage.setItem('token', accessToken.data._id);
+				// store accesstoken in AsyncStorage
+				// this.storeToken(accessToken);
 			}
 			else {
-				this.setState({errorMess:res.mess})
+			// Handle error
+				this.setState({errorMess:res.mess});
+				console.log("errorMess: " + this.state.errorMess);
+				// let error = errorMess;
+				// throw error;
 			}
 
-			
-			///// catch errors
-			if (response.status >= 200 && response.status < 300) {
-				// print input
-				console.log("Response is: " + res)		
-			} else {
-				let errors = res;
-				console.log(errors)
-			}
-
-		} catch(errors) {
-			console.log(errors)
+		} catch(error) {
+			console.log("error: " + error);
 		}
 
 	}
@@ -71,7 +86,7 @@ export default class LoginForm extends React.Component {
 				/>
 
 				<TextInput
-					onChangeText={ (text)=> this.setState({pword:text}) }
+					onChangeText={ (text)=> this.setState({password:text}) }
 					placeholder="Password" secureTextEntry={true}
 				/>
 				
@@ -123,3 +138,4 @@ const styles = StyleSheet.create({
     marginTop: 20
   }
 });
+
