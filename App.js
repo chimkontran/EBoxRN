@@ -11,7 +11,7 @@ import {
 } from 'react-navigation';
 
 import Constants from 'eboxRN/src/Constants';
-import  UserUtils from 'eboxRN/src/utils/UserUtils';
+import Utils from 'eboxRN/src/utils/Utils';
 
 const MainNavigator = TabNavigator({
 	Manage: { screen: Constants.screens.ManageScreen },
@@ -65,19 +65,20 @@ export default class eboxRN extends React.Component {
 	    };
 	    this.setLoginState = this.setLoginState.bind(this);
     }
+
     setLoginState(loggedIn){
     	this.setState({loggedIn: loggedIn})
+    }
+
+    componentDidMount(){
+    	Utils.globalFunctions.setLoginState = this.setLoginState;
+    	Utils.checkUserStatus();
     }
 
 	render(){
 		var screen = (<AppNavigator/>);
 		if (!this.state.loggedIn){
-			screen = (<View>
-				<Button 
-				onPress={()=>UserUtils.checkUser(this.setLoginState)}
-				title="asd"
-				/>
-				</View>)
+			screen = (<Constants.screens.UserScreen/>)
 		} 
 		return screen;
 	}
