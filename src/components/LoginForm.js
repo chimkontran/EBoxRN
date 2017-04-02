@@ -13,7 +13,7 @@ export default class LoginForm extends React.Component {
 
 		this.state = {
 			email: "",
-			pword: "",
+			password: "",
 			errorMess:"",
 		}
 	}
@@ -29,7 +29,7 @@ export default class LoginForm extends React.Component {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
 				body: 	"email=" + this.state.email +
-						"&password=" + this.state.pword
+						"&password=" + this.state.password
 
 			});
 			

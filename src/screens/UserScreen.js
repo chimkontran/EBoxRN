@@ -8,7 +8,8 @@ import {
 } from 'react-native';
 
 import RegisterForm from '../components/RegisterForm';
-import LoginForm from '../components/LoginForm'
+import LoginForm from '../components/LoginForm';
+import BluetoothSerialExample from '../components/Bluetooth';
 
 export default class UserScreen extends React.Component {
 	static navigationOptions = {
@@ -20,7 +21,8 @@ export default class UserScreen extends React.Component {
 		var form;
 		if (true) {
 			// form = (<RegisterForm/>)
-			form = (<LoginForm/>)
+			// form = (<LoginForm/>)
+			form = (<BluetoothSerialExample />)
 		}
 		return form
 	}
