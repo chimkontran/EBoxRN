@@ -69,6 +69,7 @@ export default class BluetoothSerialExample extends React.Component {
       connected: false,
       section: 0
     }
+    BluetoothSerial.discoverUnpairedDevices().then((abc) => this.setState({unpairedDevices: abc}))
   }
 
   componentWillMount () {
@@ -80,6 +81,8 @@ export default class BluetoothSerialExample extends React.Component {
       const [ isEnabled, devices ] = values
       this.setState({ isEnabled, devices })
     })
+
+    
 
     BluetoothSerial.on('bluetoothEnabled', () => console.log('Bluetooth enabled'))
     BluetoothSerial.on('bluetoothDisabled', () => console.log('Bluetooth disabled'))
@@ -146,10 +149,12 @@ export default class BluetoothSerialExample extends React.Component {
       this.setState({ discovering: true })
       BluetoothSerial.discoverUnpairedDevices()
       .then((unpairedDevices) => {
-        this.setState({ unpairedDevices, discovering: false })
+        this.setState({unpairedDevices, discovering: false })
+        ToastAndroid.show(data.length.toString(), ToastAndroid.SHORT)
       })
       .catch((err) => console.log(err.message))
     }
+    
   }
 
   /**
@@ -263,12 +268,59 @@ export default class BluetoothSerialExample extends React.Component {
   }
 
   render () {
+    const activeTabStyle = { borderBottomWidth: 6, borderColor: '#009688' }
     return (
+      
       <View style={{ flex: 1 }}>
-        <Button 
-            title = "abc"
-            onPress = {this.enable.bind(this)} 
-            Text = "abc"></Button>
+        {Platform.OS === 'android'
+        ? (
+          <View style={[styles.topBar, { justifyContent: 'center', paddingHorizontal: 0 }]}>
+            <TouchableOpacity style={[styles.tab, this.state.section === 0 && activeTabStyle]} onPress={() => this.setState({ section: 0 })}>
+              <Text style={{ fontSize: 14, color: '#FFFFFF' }}>PAIRED DEVICES</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.tab, this.state.section === 1 && activeTabStyle]} onPress={() => this.setState({ section: 1 })}>
+              <Text style={{ fontSize: 14, color: '#FFFFFF' }}>UNPAIRED DEVICES</Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+        {this.state.discovering && this.state.section === 1
+        ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <ActivityIndicator
+              style={{ marginBottom: 15 }}
+              size={60} />
+            <Button
+              textStyle={{ color: '#FFFFFF' }}
+              style={styles.buttonRaised}
+              title='Cancel Discovery'
+              onPress={() => this.cancelDiscovery()} />
+          </View>
+        ) : (
+        <DeviceList
+          showConnectedIcon={this.state.section === 0}
+          connectedId={this.state.device && this.state.device.id}
+          devices={this.state.section === 0 ? this.state.devices : this.state.unpairedDevices}
+          onDevicePress={(device) => this.onDevicePress(device)} />
+        )}
+        <View style={{ alignSelf: 'flex-end', height: 52 }}>
+          <ScrollView
+            horizontal
+            contentContainerStyle={styles.fixedFooter}>
+            {Platform.OS === 'android' && this.state.section === 1
+            ? (
+              <Button
+                title={this.state.discovering ? '... Discovering' : 'Discover devices'}
+                onPress={this.discoverUnpaired.bind(this)} />
+            ) : null}
+            
+            {Platform.OS === 'android' && !this.state.isEnabled
+            ? (
+              <Button
+                title='Request enable'
+                onPress={() => this.requestEnable()} />
+            ) : null}
+          </ScrollView>
+        </View>
       </View>
     )
   }
