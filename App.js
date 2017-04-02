@@ -61,7 +61,8 @@ export default class eboxRN extends React.Component {
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	    	loggedIn: false
+	    	loggedIn: false,
+	    	loaded: false
 	    };
 	    this.setLoginState = this.setLoginState.bind(this);
     }
@@ -72,14 +73,35 @@ export default class eboxRN extends React.Component {
 
     componentDidMount(){
     	Utils.globalFunctions.setLoginState = this.setLoginState;
-    	Utils.checkUserStatus();
+    	Utils.checkUserStatus()
+    		.then(res => {
+				if (res.status == "successful"){
+					this.state.loggedIn = true;
+				}
+			})
+			.catch(err => {
+				console.log(err)
+			})
+			.then(()=>{
+				this.setState({
+					loaded: true
+				})
+			})
+			.catch(err => {
+				console.log(err)
+			})
     }
 
 	render(){
-		var screen = (<AppNavigator/>);
-		if (!this.state.loggedIn){
-			screen = (<Constants.screens.UserScreen/>)
-		} 
+		var screen = (<View/>);
+		if (this.state.loaded){
+			if (!this.state.loggedIn){
+				screen = (<Constants.screens.UserScreen isPortal={true}/>)
+			}
+			else {
+				screen = (<AppNavigator/>);
+			}
+		}
 		return screen;
 	}
 }

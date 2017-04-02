@@ -8,7 +8,7 @@ import {
   View
 } from 'react-native';
 
-const ACCESS_TOKEN = 'access_token';
+import Utils from 'eboxRN/src/utils/Utils';
 
 class RegisterForm extends React.Component {
 	constructor() {
@@ -24,40 +24,17 @@ class RegisterForm extends React.Component {
 
 	async onRegisterPressed(){
 		try{
-
-			// console.log(this.state.password == this.state.password_confirm)
-			let response = await fetch('http://139.59.102.199/API/Users/Register', {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
-				body: "email=" + this.state.email +
-					"&password=" + this.state.password +
-					"&confirm-password=" + this.state.password_confirm
-
-			});
-			
-			let res = await response.text();
-			res = JSON.parse(res);
-
+			var params = {
+				email: this.state.email,
+				password: this.state.password,
+				"confirm-password": this.state.password_confirm
+			}
+			let res = await Utils.makeEboxServerRequest('/Users/Register', 'POST', params)
 			if (res.status == "successful"){
-				// Handle success
-				this.setState({errorMess:""});
-
-				let accessToken = res; // res.status
-				console.log("accessToken: " + accessToken);
-				// store accesstoken in AsyncStorage
-				// this.storeToken(accessToken);
+				delete params["confirm-password"]
+				await AsyncStorage.setItem('credentials', JSON.stringify(params))
+				this.props.setLoginState(true)
 			}
-			else {
-				// Handle error
-				this.setState({errorMess:res.mess});
-				console.log("errorMess: " + this.state.errorMess);
-				// let error = errorMess;
-				// throw error;
-			}
-
 		} catch(error) {
 			console.log("error: " + error);
 		}

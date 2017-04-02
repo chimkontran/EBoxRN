@@ -24,14 +24,17 @@ async function makeEboxServerRequest(uri, method, params){
 			},
 			body: (isPOST && paramsStr) || null
 		});
+		console.log("still fetching")
 		let res = await response.text();
 		if (res) {
 			res = JSON.parse(res);
 			console.log(res)
 			if (res.code == "NOT_LOGGED_IN"){
 				try {
-					const credentials = await AsyncStorage.getItem('credentials');
+					var credentials = await AsyncStorage.getItem('credentials');
+					credentials = JSON.parse(credentials)
 					if (credentials !== null){
+						console.log("asd")
 						loginEboxServer(credentials.email, credentials.password)
 							.then(res => {
 								if (res.status == "successful") {
@@ -68,28 +71,23 @@ async function makeEboxServerRequest(uri, method, params){
 
 function loginEboxServer(email, password){
 	var params = {email: email, password: password};
+	var _res;
 	return makeEboxServerRequest("/Users/Login", 'POST', params)
 		.then(res => {
+			_res = res;
 			if (res.status == "successful") {
-				AsyncStorage.setItem('credentials', params)
+				console.log("xyz")
+				return AsyncStorage.setItem('credentials', JSON.stringify(params))
 			}
-			return res;
 		})
-		.catch(err => {
-			console.log(err)
+		.then(() => {
+			console.log("res:" + JSON.stringify(_res))
+			return _res
 		})
 }
 
 function checkUserStatus(){
 	return makeEboxServerRequest('/Users/Status', 'GET', {})
-		.then(res => {
-			if (res.status == "successful"){
-				globalFunctions.setLoginState(true)
-			}
-		})
-		.catch(err => {
-			console.log(err)
-		})
 }
 
 const globalFunctions = {

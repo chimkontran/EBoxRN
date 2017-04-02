@@ -8,38 +8,15 @@ import {
   View
 } from 'react-native';
 
+import Utils from 'eboxRN/src/utils/Utils';
+
 export default class LogoutForm extends React.Component {
-
-
 	async onLogoutPressed(){
 		try {
-			let response = await fetch('http://139.59.102.199/API/Users/Logout', {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
-				body: null
-			});
-
-			let res = await response.text();
-			res = JSON.parse(res);
-			// console.log("Response is: " + res.mess)
-
-
-			if (res.status == "successful"){
-				// Handle success
-				let accessToken = res; // res.status
-				console.log("accessToken: " + accessToken);
-				// store accesstoken in AsyncStorage
-				// this.storeToken(accessToken);
-			}
-			else {
-				// Handle error
-				this.setState({errorMess:res.mess});
-				console.log("errorMess: " + errorMess);
-				// let error = errorMess;
-				// throw error;
+			let response = await Utils.makeEboxServerRequest('/Users/Logout', 'POST', {})
+			if (response.status == "successful"){
+				await AsyncStorage.removeItem("credentials")
+				Utils.globalFunctions.setLoginState(false)
 			}
 
 		} catch(error) {
