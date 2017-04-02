@@ -38,7 +38,7 @@ async function makeEboxServerRequest(uri, method, params){
 						loginEboxServer(credentials.email, credentials.password)
 							.then(res => {
 								if (res.status == "successful") {
-									return res
+									return makeEboxServerRequest(uri, method, params);
 								}
 								else {
 									globalFunctions.setLoginState(false);
