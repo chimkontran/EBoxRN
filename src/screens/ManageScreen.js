@@ -17,7 +17,6 @@ export default class ManageScreen extends React.Component
 	_checkAsyncStorage = async () => {
 
 		const token = await AsyncStorage.getItem('token');
-		console.log("Get token from LoginForm: " + token);
 	}
 
 	static navigationOptions = {

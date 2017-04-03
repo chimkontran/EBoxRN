@@ -8,9 +8,9 @@ import {
   View
 } from 'react-native';
 
-const ACCESS_TOKEN = 'access_token';
+// const ACCESS_TOKEN = 'access_token';
 
-class RegisterForm extends React.Component {
+export default class RegisterForm extends React.Component {
 	constructor() {
 		super();
 
@@ -19,13 +19,13 @@ class RegisterForm extends React.Component {
 			password: "",
 			password_confirm:"",
 			errorMess:"",
+			userState:""
 		}
 	}
 
 	async onRegisterPressed(){
 		try{
 
-			// console.log(this.state.password == this.state.password_confirm)
 			let response = await fetch('http://139.59.102.199/API/Users/Register', {
 				method: 'POST',
 				headers: {
@@ -47,15 +47,13 @@ class RegisterForm extends React.Component {
 
 				let accessToken = res; // res.status
 				console.log("accessToken: " + accessToken);
-				// store accesstoken in AsyncStorage
-				// this.storeToken(accessToken);
+
+				this.setState({userState:"loggedin"});
 			}
 			else {
 				// Handle error
 				this.setState({errorMess:res.mess});
 				console.log("errorMess: " + this.state.errorMess);
-				// let error = errorMess;
-				// throw error;
 			}
 
 		} catch(error) {
@@ -127,5 +125,3 @@ const styles = StyleSheet.create({
     marginTop: 20
   }
 });
-
-export default RegisterForm

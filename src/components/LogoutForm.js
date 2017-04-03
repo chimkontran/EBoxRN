@@ -9,6 +9,25 @@ import {
 } from 'react-native';
 
 export default class LogoutForm extends React.Component {
+	constructor() {
+		super();
+
+		this.state = {
+			errorMess:"",
+			token:"",
+			userState:""
+		}		
+	}
+
+	componentWillMount(){
+		this._checkAsyncStorage().done();
+	}
+
+	_checkAsyncStorage = async () => {
+
+		const token = await AsyncStorage.getItem('token');
+		this.setState({token: token});
+	}
 
 
 	async onLogoutPressed(){
@@ -19,32 +38,31 @@ export default class LogoutForm extends React.Component {
 					'Accept': 'application/json',
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
-				body: ()
+				body: ("")
 
 			});
 
 			let res = await response.text();
 			res = JSON.parse(res);
-			// console.log("Response is: " + res.mess)
 
+			// remove Token
+			AsyncStorage.removeItem('token');
 
 			if (res.status == "successful"){
-				// Handle success
+			// Handle success
+				this.setState({errorMess:""});
 				let accessToken = res; // res.status
-				console.log("accessToken: " + accessToken);
-				// store accesstoken in AsyncStorage
-				// this.storeToken(accessToken);
+
+				this.setState({userState:"loggedout"});
 			}
 			else {
-				// Handle error
+			// Handle error
 				this.setState({errorMess:res.mess});
-				console.log("errorMess: " + errorMess);
-				// let error = errorMess;
-				// throw error;
+				console.log("errorMess: " + this.state.errorMess);
 			}
 
 		} catch(error) {
-			console.log(error)
+			console.log("error: " + error);
 		}
 	}
 

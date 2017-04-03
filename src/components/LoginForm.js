@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
+// import { Checkbox } from 'react-native-material-design'
 import {
+  // Checkbox,
   StyleSheet,
   TextInput,
   TouchableHighlight,
@@ -16,7 +18,8 @@ export default class LoginForm extends React.Component {
 			email: "",
 			password: "",
 			errorMess:"",
-			token:""
+			token:"",
+			userState:"",
 		}		
 	}
 
@@ -33,7 +36,6 @@ export default class LoginForm extends React.Component {
 
 	async onLoginPressed() {
 		try{
-			// console.log(this.state.password == this.state.password_confirm)
 			let response = await fetch('http://139.59.102.199/API/Users/Login', {
 				method: 'POST',
 				headers: {
@@ -44,12 +46,9 @@ export default class LoginForm extends React.Component {
 					"&password="+this.state.password)
 
 			});
-			// console.log("email="+this.state.email+"&password="+this.state.password)
 			
 			let res = await response.text();
 			res = JSON.parse(res);
-			// console.log("Response is: " + res.mess)
-
 
 			if (res.status == "successful"){
 			// Handle success
@@ -58,15 +57,13 @@ export default class LoginForm extends React.Component {
 
 				console.log("accessToken: " + accessToken.data._id);
 				AsyncStorage.setItem('token', accessToken.data._id);
-				// store accesstoken in AsyncStorage
-				// this.storeToken(accessToken);
+
+				this.setState({userState:"loggedin"});
 			}
 			else {
 			// Handle error
 				this.setState({errorMess:res.mess});
 				console.log("errorMess: " + this.state.errorMess);
-				// let error = errorMess;
-				// throw error;
 			}
 
 		} catch(error) {
@@ -90,13 +87,10 @@ export default class LoginForm extends React.Component {
 					placeholder="Password" secureTextEntry={true}
 				/>
 				
-				
 				<TouchableHighlight  style={styles.button}
 				onPress={this.onLoginPressed.bind(this)}>
 					<Text style={styles.buttonText}>Login</Text>
 				</TouchableHighlight>
-
-				
 			</View>
 
 				// <ActivityIndicatorIOS animating={this.state.showProgress} size="large" style={styles.loader} />
@@ -138,4 +132,3 @@ const styles = StyleSheet.create({
     marginTop: 20
   }
 });
-
