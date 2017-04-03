@@ -10,15 +10,6 @@ import {
 
 export default class ManageScreen extends React.Component 
 {
-	componentWillMount(){
-		this._checkAsyncStorage().done();
-	}
-
-	_checkAsyncStorage = async () => {
-
-		const token = await AsyncStorage.getItem('token');
-	}
-
 	static navigationOptions = {
 		tabBar: {
 			icon: ({ tintColor }) => (

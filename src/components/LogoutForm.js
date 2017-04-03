@@ -8,57 +8,67 @@ import {
   View
 } from 'react-native';
 
+// <<<<<<< HEAD
+// export default class LogoutForm extends React.Component {
+// 	constructor() {
+// 		super();
+
+// 		this.state = {
+// 			errorMess:"",
+// 			token:"",
+// 			userState:""
+// 		}		
+// 	}
+
+// 	componentWillMount(){
+// 		this._checkAsyncStorage().done();
+// 	}
+
+// 	_checkAsyncStorage = async () => {
+
+// 		const token = await AsyncStorage.getItem('token');
+// 		this.setState({token: token});
+// 	}
+
+// =======
+import Utils from 'eboxRN/src/utils/Utils';
+
 export default class LogoutForm extends React.Component {
-	constructor() {
-		super();
-
-		this.state = {
-			errorMess:"",
-			token:"",
-			userState:""
-		}		
-	}
-
-	componentWillMount(){
-		this._checkAsyncStorage().done();
-	}
-
-	_checkAsyncStorage = async () => {
-
-		const token = await AsyncStorage.getItem('token');
-		this.setState({token: token});
-	}
-
-
 	async onLogoutPressed(){
 		try {
-			let response = await fetch('http://139.59.102.199/API/Users/Logout', {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
-				body: ("")
+// <<<<<<< HEAD
+// 			let response = await fetch('http://139.59.102.199/API/Users/Logout', {
+// 				method: 'POST',
+// 				headers: {
+// 					'Accept': 'application/json',
+// 					'Content-Type': 'application/x-www-form-urlencoded'
+// 				},
+// 				body: ("")
 
-			});
+// 			});
 
-			let res = await response.text();
-			res = JSON.parse(res);
+// 			let res = await response.text();
+// 			res = JSON.parse(res);
 
-			// remove Token
-			AsyncStorage.removeItem('token');
+// 			// remove Token
+// 			AsyncStorage.removeItem('token');
 
-			if (res.status == "successful"){
-			// Handle success
-				this.setState({errorMess:""});
-				let accessToken = res; // res.status
+// 			if (res.status == "successful"){
+// 			// Handle success
+// 				this.setState({errorMess:""});
+// 				let accessToken = res; // res.status
 
-				this.setState({userState:"loggedout"});
-			}
-			else {
-			// Handle error
-				this.setState({errorMess:res.mess});
-				console.log("errorMess: " + this.state.errorMess);
+// 				this.setState({userState:"loggedout"});
+// 			}
+// 			else {
+// 			// Handle error
+// 				this.setState({errorMess:res.mess});
+// 				console.log("errorMess: " + this.state.errorMess);
+// =======
+			let response = await Utils.makeEboxServerRequest('/Users/Logout', 'POST', {})
+			if (response.status == "successful"){
+				await AsyncStorage.removeItem("credentials")
+				Utils.globalFunctions.setLoginState(false)
 			}
 
 		} catch(error) {

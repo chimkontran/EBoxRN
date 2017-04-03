@@ -10,6 +10,8 @@ import {
   View
 } from 'react-native';
 
+import Utils from 'eboxRN/src/utils/Utils';
+
 export default class LoginForm extends React.Component {
 	constructor() {
 		super();
@@ -17,53 +19,45 @@ export default class LoginForm extends React.Component {
 		this.state = {
 			email: "",
 			password: "",
-			errorMess:"",
-			token:"",
-			userState:"",
+			errorMess:""
 		}		
-	}
-
-	componentWillMount(){
-		this._checkAsyncStorage().done();
-	}
-
-	_checkAsyncStorage = async () => {
-
-		const token = await AsyncStorage.getItem('token');
-		this.setState({token: token});
-		console.log("Get from state in loginform: " + this.state.token);
 	}
 
 	async onLoginPressed() {
 		try{
-			let response = await fetch('http://139.59.102.199/API/Users/Login', {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
-				body: ("email="+this.state.email+
-					"&password="+this.state.password)
+// <<<<<<< HEAD
+// 			let response = await fetch('http://139.59.102.199/API/Users/Login', {
+// 				method: 'POST',
+// 				headers: {
+// 					'Accept': 'application/json',
+// 					'Content-Type': 'application/x-www-form-urlencoded'
+// 				},
+// 				body: ("email="+this.state.email+
+// 					"&password="+this.state.password)
 
-			});
+// 			});
 			
-			let res = await response.text();
-			res = JSON.parse(res);
+// 			let res = await response.text();
+// 			res = JSON.parse(res);
 
+// 			if (res.status == "successful"){
+// 			// Handle success
+// 				this.setState({errorMess:""});
+// 				let accessToken = res; // res.status
+
+// 				console.log("accessToken: " + accessToken.data._id);
+// 				AsyncStorage.setItem('token', accessToken.data._id);
+
+// 				this.setState({userState:"loggedin"});
+// 			}
+// 			else {
+// 			// Handle error
+// 				this.setState({errorMess:res.mess});
+// 				console.log("errorMess: " + this.state.errorMess);
+// =======
+			let res = await Utils.loginEboxServer(this.state.email, this.state.password)
 			if (res.status == "successful"){
-			// Handle success
-				this.setState({errorMess:""});
-				let accessToken = res; // res.status
-
-				console.log("accessToken: " + accessToken.data._id);
-				AsyncStorage.setItem('token', accessToken.data._id);
-
-				this.setState({userState:"loggedin"});
-			}
-			else {
-			// Handle error
-				this.setState({errorMess:res.mess});
-				console.log("errorMess: " + this.state.errorMess);
+				this.props.setLoginState(true)
 			}
 
 		} catch(error) {

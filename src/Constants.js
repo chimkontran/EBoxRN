@@ -6,7 +6,11 @@ import UserScreen from 'eboxRN/src/screens/UserScreen';
 
 import MainStyles from 'eboxRN/src/styles/MainStyles';
 
-const path = {
+const urls = {
+	eboxAPI: 'http://139.59.102.199/API'
+}
+
+const paths = {
 	screensFolder: 'eboxRN/src/screens/',
 	imagesFolder: 'eboxRN/src/images/',
 	stylesFolder: 'eboxRN/src/styles/'
@@ -43,9 +47,10 @@ const screens = {
 }
 
 export default Constants = {
+	urls: urls,
 	styles: styles,
 	colors: colors,
 	images: images,
-	path: path,
+	paths: paths,
 	screens: screens
 };

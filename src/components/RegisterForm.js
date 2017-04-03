@@ -8,7 +8,7 @@ import {
   View
 } from 'react-native';
 
-// const ACCESS_TOKEN = 'access_token';
+import Utils from 'eboxRN/src/utils/Utils';
 
 export default class RegisterForm extends React.Component {
 	constructor() {
@@ -26,36 +26,46 @@ export default class RegisterForm extends React.Component {
 	async onRegisterPressed(){
 		try{
 
-			let response = await fetch('http://139.59.102.199/API/Users/Register', {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
-				body: "email=" + this.state.email +
-					"&password=" + this.state.password +
-					"&confirm-password=" + this.state.password_confirm
 
-			});
+			// let response = await fetch('http://139.59.102.199/API/Users/Register', {
+			// 	method: 'POST',
+			// 	headers: {
+			// 		'Accept': 'application/json',
+			// 		'Content-Type': 'application/x-www-form-urlencoded'
+			// 	},
+			// 	body: "email=" + this.state.email +
+			// 		"&password=" + this.state.password +
+			// 		"&confirm-password=" + this.state.password_confirm
+
+			// });
 			
-			let res = await response.text();
-			res = JSON.parse(res);
+			// let res = await response.text();
+			// res = JSON.parse(res);
 
+			// if (res.status == "successful"){
+			// 	// Handle success
+			// 	this.setState({errorMess:""});
+
+			// 	let accessToken = res; // res.status
+			// 	console.log("accessToken: " + accessToken);
+
+			// 	this.setState({userState:"loggedin"});
+			// }
+			// else {
+			// 	// Handle error
+			// 	this.setState({errorMess:res.mess});
+			// 	console.log("errorMess: " + this.state.errorMess);
+			var params = {
+				email: this.state.email,
+				password: this.state.password,
+				"confirm-password": this.state.password_confirm
+			}
+			let res = await Utils.makeEboxServerRequest('/Users/Register', 'POST', params)
 			if (res.status == "successful"){
-				// Handle success
-				this.setState({errorMess:""});
-
-				let accessToken = res; // res.status
-				console.log("accessToken: " + accessToken);
-
-				this.setState({userState:"loggedin"});
+				delete params["confirm-password"]
+				await AsyncStorage.setItem('credentials', JSON.stringify(params))
+				this.props.setLoginState(true)
 			}
-			else {
-				// Handle error
-				this.setState({errorMess:res.mess});
-				console.log("errorMess: " + this.state.errorMess);
-			}
-
 		} catch(error) {
 			console.log("error: " + error);
 		}
