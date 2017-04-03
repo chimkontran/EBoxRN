@@ -8,60 +8,62 @@ async function makeEboxServerRequest(uri, method, params){
 	console.log("fetching")
 	try{
 		var paramsStr = "";
-		for (var i = 0; i < Object.keys(params).length; i++){
-			var key = Object.keys(params)[i];
-			var value = params[key];
-			i > 0 && (paramsStr += "&");
-			paramsStr += key + "=" + value;
-		}
 		var isPOST = method == "POST"
-		var url = Constants.urls.eboxAPI + uri + ((!isPOST && paramsStr) || "")
+		if (!isPOST){
+			for (var i = 0; i < Object.keys(params).length; i++){
+				var key = Object.keys(params)[i];
+				var value = params[key];
+				i > 0 && (paramsStr += "&");
+				paramsStr += key + "=" + value;
+			}
+		}
+
+		var url = Constants.urls.eboxAPI + uri + paramsStr
 		let response = await fetch(url, {
 			method: method,
 			headers: {
 				'Accept': 'application/json',
-				'Content-Type': 'application/x-www-form-urlencoded'
+				'Content-Type': 'application/json'
 			},
-			body: (isPOST && paramsStr) || null
+			body: (isPOST && JSON.stringify(params)) || null
 		});
 		console.log("still fetching")
 		let res = await response.text();
-		if (res) {
-			res = JSON.parse(res);
-			console.log(res)
-			if (res.code == "NOT_LOGGED_IN"){
-				try {
-					var credentials = await AsyncStorage.getItem('credentials');
-					credentials = JSON.parse(credentials)
-					if (credentials !== null){
-						console.log("asd")
-						loginEboxServer(credentials.email, credentials.password)
-							.then(res => {
-								if (res.status == "successful") {
-									return makeEboxServerRequest(uri, method, params);
-								}
-								else {
-									globalFunctions.setLoginState(false);
-									throw "NOT_LOGGED_IN"
-								}
-							})
-					}
-					else {
-						globalFunctions.setLoginState(false);
-						throw "NOT_LOGGED_IN"
-					}
-				}
-				catch(err){
-					globalFunctions.setLoginState(false);
-					throw "NOT_LOGGED_IN"
-				}
+		if (!res) {
+			throw "No respond"
+		}
+
+		res = JSON.parse(res);
+		console.log(res)
+		if (res.code != "NOT_LOGGED_IN"){
+			return res
+		}
+
+		// auto re-login
+		try {
+			var credentials = await AsyncStorage.getItem('credentials');
+			credentials = JSON.parse(credentials)
+			if (credentials !== null){
+				console.log("asd")
+				loginEboxServer(credentials.email, credentials.password)
+					.then(res => {
+						if (res.status == "successful") {
+							return makeEboxServerRequest(uri, method, params);
+						}
+						else {
+							globalFunctions.setLoginState(false);
+							throw "NOT_LOGGED_IN"
+						}
+					})
 			}
 			else {
-				return res
+				globalFunctions.setLoginState(false);
+				throw "NOT_LOGGED_IN"
 			}
 		}
-		else {
-			throw "No respond"
+		catch(err){
+			globalFunctions.setLoginState(false);
+			throw "NOT_LOGGED_IN"
 		}
 
 	} catch(error) {
