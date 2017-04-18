@@ -32,6 +32,7 @@ const images = {
 	alarmIcon: require('eboxRN/src/images/alarmIcon.png'),
 	reportIcon: require('eboxRN/src/images/reportIcon.png'),
 	settingsIcon: require('eboxRN/src/images/settingsIcon.png'),
+	socketIcon: require('eboxRN/src/images/socketIcon.png')
 }
 
 const styles = {

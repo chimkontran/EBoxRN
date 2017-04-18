@@ -34,7 +34,6 @@ async function makeEboxServerRequest(uri, method, params){
 		}
 
 		res = JSON.parse(res);
-		console.log(res)
 		if (res.code != "NOT_LOGGED_IN"){
 			return res
 		}
@@ -45,7 +44,7 @@ async function makeEboxServerRequest(uri, method, params){
 			credentials = JSON.parse(credentials)
 			if (credentials !== null){
 				console.log("asd")
-				loginEboxServer(credentials.email, credentials.password)
+				return loginEboxServer(credentials.email, credentials.password)
 					.then(res => {
 						if (res.status == "successful") {
 							return makeEboxServerRequest(uri, method, params);
