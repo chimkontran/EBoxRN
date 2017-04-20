@@ -83,7 +83,7 @@ export default class EboxSocketView extends React.Component {
 		nameOptions.push("other")
 		var currentOption = 
 		(this.state.newName 
-			&& nameOptions.indexOf(this.state.newName) != -1) 
+			&& nameOptions.indexOf(this.state.newName) != -1) && this.state.newName
 				|| "other"
 		return (
 			<View style={{flex: 1, margin: 10}}>
@@ -122,7 +122,13 @@ export default class EboxSocketView extends React.Component {
 						}
 			            <Text>{this.state.err}</Text>
 			            <Button onPress={this.renameEboxSocket.bind(this)} title="Rename"/>
-			            <TouchableHighlight onPress={()=>{this.setState({isRenaming: false})}}>
+			            <TouchableHighlight 
+			            	onPress={()=>{
+			            		this.setState({
+			            			isRenaming: false, 
+			            			newName: this.state.name
+			            		})
+			            	}}>
 			              <Text>Cancel</Text>
 			            </TouchableHighlight>
 		         	</View>
@@ -138,7 +144,7 @@ export default class EboxSocketView extends React.Component {
 							borderBottomColor: 'transparent'
 						}
 					]}>
-					<HoldableOpacity duration={this.props.mode == 0 ? 0 : 20}
+					<HoldableOpacity duration={this.props.mode == 0 ? 0 : 1000}
 						onHold={this.switchSocket}>
 						<Image 
 				            source={Constants.images.socketIcon}
@@ -158,7 +164,10 @@ export default class EboxSocketView extends React.Component {
 				        />
 					</HoldableOpacity>
 				</View>
-				<HoldableOpacity duration={20} 
+				<Text style={{textAlign:'center'}}>
+					{(this.props.wattage || 0) + " W"}
+				</Text>
+				<HoldableOpacity duration={500} 
 					style={{marginTop: 10}}
 					onHold={()=>{
 						this.setState({

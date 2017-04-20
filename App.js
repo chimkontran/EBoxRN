@@ -46,6 +46,7 @@ MainNavigator.navigationOptions = {
 const AppNavigator = StackNavigator({
 	Main: { screen: MainNavigator },
 	User: { screen: Constants.screens.UserScreen },
+	EBoxConfig: { screen: Constants.screens.EBoxConfigScreen}
 }, {
 	navigationOptions: {
 		header: {

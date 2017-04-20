@@ -4,7 +4,8 @@ import {
 	Image,
 	View,
 	StyleSheet,
-	Text
+	Text,
+	Button
 } from 'react-native';
 
 import Constants from 'eboxRN/src/Constants';
@@ -37,7 +38,7 @@ export default class ManageScreen extends React.Component
 
 	componentDidMount(){
 		this.updateEboxesStatus();
-		this.state.dataRefreshInterval = setInterval(this.updateEboxesStatus, 10000)
+		this.state.dataRefreshInterval = setInterval(this.updateEboxesStatus, 5000)
 	}
 
 	updateEboxesStatus(){
@@ -69,7 +70,12 @@ export default class ManageScreen extends React.Component
 		          	dataSource={this.state.eboxesDataSource}
 		          	renderRow={this.renderEboxView}
 		        />
-		        <View style={{flex: 1}}></View>
+		        <Button 
+		        	title="Add EBox" 
+		        	onPress={() => 
+		        		this.props.navigation.navigate('EBoxConfig') }
+	        		/>
+		        
 	    	</View>);
     }
 }

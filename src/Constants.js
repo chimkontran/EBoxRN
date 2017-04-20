@@ -3,6 +3,7 @@ import ScheduleScreen from 'eboxRN/src/screens/ScheduleScreen';
 import ReportScreen from 'eboxRN/src/screens/ReportScreen';
 import SettingsScreen from 'eboxRN/src/screens/SettingsScreen';
 import UserScreen from 'eboxRN/src/screens/UserScreen';
+import EBoxConfigScreen from 'eboxRN/src/screens/EBoxConfigScreen';
 
 import MainStyles from 'eboxRN/src/styles/MainStyles';
 
@@ -44,7 +45,8 @@ const screens = {
 	ScheduleScreen: ScheduleScreen,
 	ReportScreen: ReportScreen,
 	SettingsScreen: SettingsScreen,
-	UserScreen: UserScreen
+	UserScreen: UserScreen,
+	EBoxConfigScreen: EBoxConfigScreen
 }
 
 export default Constants = {

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import EboxSocketView from 'eboxRN/src/components/EboxSocketView';
-import HolableOpacity from 'eboxRN/src/components/HoldableOpacity';
+import HoldableOpacity from 'eboxRN/src/components/HoldableOpacity';
 import Utils from 'eboxRN/src/utils/Utils';
 
 export default class EboxControlsView extends React.Component {
@@ -73,7 +73,7 @@ export default class EboxControlsView extends React.Component {
 			            </TouchableHighlight>
 		         	</View>
 		        </Modal>
-				<HolableOpacity duration={20} 
+				<HoldableOpacity duration={500} 
 					onHold={()=>{
 						this.setState({
 							isRenaming: true, 
@@ -84,7 +84,7 @@ export default class EboxControlsView extends React.Component {
 					<Text style={{textAlign: 'center', fontSize: 22, fontWeight:'bold'}}>
 						{this.state.name || "Unnamed"}
 					</Text>
-				</HolableOpacity>
+				</HoldableOpacity>
 				<View style={{flexDirection: 'row'}}>
 					{range.map(i => {
 						return (
@@ -98,6 +98,7 @@ export default class EboxControlsView extends React.Component {
 								updateEboxesStatus={this.props.updateEboxesStatus}
 								socketNames={this.state.socketNames}
 								mode={this.state.status == "offline" ? -1 : this.state.status[i]}
+								wattage={this.state.status == "offline" ? 0 : this.state.wattages[i]}
 								eboxID={this.state.id}
 								name={this.state.currentSocketNames[i]}
 								index={i}/>
