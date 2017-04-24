@@ -128,6 +128,7 @@ export default class EBoxConfigScreen extends React.Component {
 			.then(data => {
 				console.log(data)
 				if (data.indexOf('TCP connection ready') >= 0){
+					BluetoothSerial.disconnect()
 					this.props.navigation.goBack()
 				}
 				else {
