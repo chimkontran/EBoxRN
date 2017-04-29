@@ -27,12 +27,18 @@ export default class EboxSocketView extends React.Component {
 			isRenaming: false,
 			showNameInput: this.props.name == "",
 			err: "",
-			name: this.props.name
+			name: this.props.name,
+			loaded: false
 		}
 		this.switchSocket = this.switchSocket.bind(this)
 	}
 
+	componentDidMount(){
+		this.setState({loaded: true})
+	}
+
 	componentWillReceiveProps(nextProps){
+		if (!this.state.loaded) return
 		this.setState({name:nextProps.name})
 	}
 

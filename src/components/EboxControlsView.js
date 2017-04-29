@@ -20,12 +20,18 @@ export default class EboxControlsView extends React.Component {
 		super(props);
 		this.state = {
 			isRenaming: false,
-			err: ""
+			err: "",
+			loaded: false
 		}
 		this.state = Object.assign(this.state, this.props.data)
 	}
 
+	componentDidMount(){
+		this.setState({loaded: true})
+	}
+
 	componentWillReceiveProps(nextProps){
+		if (!this.state.loaded) return
 		this.setState(Object.assign(this.state, nextProps.data))
 	}
 
