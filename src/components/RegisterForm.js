@@ -50,21 +50,23 @@ class RegisterForm extends React.Component {
 					onChangeText={(val) => this.setState({email:val})}
 					placeholder="Email"
 				/>
-				
+
 				<TextInput
 					onChangeText={(val) => this.setState({password:val})}
 					secureTextEntry={true} placeholder="Password"
 				/>
-				
+
 				<TextInput
 					onChangeText={(val) => this.setState({password_confirm:val})}
 					secureTextEntry={true} placeholder="Confirm password"
 				/>
 
-				<TouchableHighlight style={styles.button} 
+				<TouchableHighlight style={styles.button}
 				onPress={this.onRegisterPressed.bind(this)}>
 					<Text style={styles.buttonText}>Register</Text>
 				</TouchableHighlight>
+
+        <Text style={{color: 'black', textAlign: 'center'}}>Already have an account?</Text>
 			</View>
 			);
 	}

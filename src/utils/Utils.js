@@ -28,6 +28,7 @@ async function makeEboxServerRequest(uri, method, params){
 			body: (isPOST && JSON.stringify(params)) || null
 		});
 		console.log("still fetching")
+    console.log(url)
 		let res = await response.text();
 		if (!res) {
 			throw "No respond"

@@ -57,7 +57,8 @@ export default class EboxControlsView extends React.Component {
 		var range = [0,1,2,3];
 		return (
 			<View>
-				<Modal 
+				{/* Rename Ebox */}
+				<Modal
 					visible={this.state.isRenaming}
 					onRequestClose={()=>{}}
 					>
@@ -73,10 +74,10 @@ export default class EboxControlsView extends React.Component {
 			            </TouchableHighlight>
 		         	</View>
 		        </Modal>
-				<HolableOpacity duration={20} 
+				<HolableOpacity duration={20}
 					onHold={()=>{
 						this.setState({
-							isRenaming: true, 
+							isRenaming: true,
 							err: "",
 							newName: this.state.name
 						})}
@@ -85,13 +86,15 @@ export default class EboxControlsView extends React.Component {
 						{this.state.name || "Unnamed"}
 					</Text>
 				</HolableOpacity>
+
+				{/*  Show Ebox info */}
 				<View style={{flexDirection: 'row'}}>
 					{range.map(i => {
 						return (
-							<EboxSocketView 
+							<EboxSocketView
 								key={
 									JSON.stringify({
-										eboxID: this.state.id, 
+										eboxID: this.state.id,
 										index: i
 									})
 								}

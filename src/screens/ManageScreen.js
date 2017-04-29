@@ -12,7 +12,7 @@ import Utils from 'eboxRN/src/utils/Utils';
 
 import EboxControlsView from 'eboxRN/src/components/EboxControlsView';
 
-export default class ManageScreen extends React.Component 
+export default class ManageScreen extends React.Component
 {
 	static navigationOptions = {
 		tabBar: {
@@ -55,7 +55,7 @@ export default class ManageScreen extends React.Component
 
 	renderEboxView(eboxData){
 		console.log(eboxData)
-		return (<EboxControlsView 
+		return (<EboxControlsView
           			updateEboxesStatus={this.updateEboxesStatus}
           			data={eboxData} />)
 	}

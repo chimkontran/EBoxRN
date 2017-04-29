@@ -3,6 +3,7 @@ import ScheduleScreen from 'eboxRN/src/screens/ScheduleScreen';
 import ReportScreen from 'eboxRN/src/screens/ReportScreen';
 import SettingsScreen from 'eboxRN/src/screens/SettingsScreen';
 import UserScreen from 'eboxRN/src/screens/UserScreen';
+import AddScheduleScreen from 'eboxRN/src/screens/AddScheduleScreen';
 
 import MainStyles from 'eboxRN/src/styles/MainStyles';
 
@@ -32,7 +33,8 @@ const images = {
 	alarmIcon: require('eboxRN/src/images/alarmIcon.png'),
 	reportIcon: require('eboxRN/src/images/reportIcon.png'),
 	settingsIcon: require('eboxRN/src/images/settingsIcon.png'),
-	socketIcon: require('eboxRN/src/images/socketIcon.png')
+	socketIcon: require('eboxRN/src/images/socketIcon.png'),
+	plusIcon: require('eboxRN/src/images/plusIcon.png')
 }
 
 const styles = {
@@ -44,7 +46,8 @@ const screens = {
 	ScheduleScreen: ScheduleScreen,
 	ReportScreen: ReportScreen,
 	SettingsScreen: SettingsScreen,
-	UserScreen: UserScreen
+	UserScreen: UserScreen,
+	AddSchedule: AddScheduleScreen
 }
 
 export default Constants = {
