@@ -41,6 +41,10 @@ export default class ManageScreen extends React.Component
 		this.state.dataRefreshInterval = setInterval(this.updateEboxesStatus, 5000)
 	}
 
+	componentWillUnmount(){
+		clearInterval(this.state.dataRefreshInterval)
+	}
+
 	updateEboxesStatus(){
 		Utils.makeEboxServerRequest('/Management', 'GET', {})
 		.then(res => {

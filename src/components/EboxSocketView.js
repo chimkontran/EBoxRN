@@ -10,7 +10,8 @@ import {
 	Button,
 	TouchableOpacity,
 	TouchableHighlight,
-	Picker
+	Picker,
+	Switch
 } from 'react-native';
 
 const socketColors = ['yellow', 'red', 'blue', 'pink'];
@@ -30,7 +31,9 @@ export default class EboxSocketView extends React.Component {
 			name: this.props.name,
 			loaded: false
 		}
+		this.state = Object.assign(this.state, this.props.data)
 		this.switchSocket = this.switchSocket.bind(this)
+		this.switchSmartOffMode = this.switchSmartOffMode.bind(this)
 	}
 
 	componentDidMount(){
@@ -39,20 +42,20 @@ export default class EboxSocketView extends React.Component {
 
 	componentWillReceiveProps(nextProps){
 		if (!this.state.loaded) return
-		this.setState({name:nextProps.name})
+		this.setState(Object.assign(this.state, nextProps.data))
 	}
 
 	switchSocket(){
 		if (this.state.offline) return;
 		Utils.makeEboxServerRequest('/Management', 'POST', {
-			eboxID: this.props.eboxID,
-			socketNum: this.props.index,
-			mode: this.props.mode == 0 ? 1 : 0
+			eboxID: this.state.eboxID,
+			socketNum: this.state.index,
+			mode: this.state.mode == 0 ? 1 : 0
 		})
 		.then(res => {
 			console.log(res)
 			if (res.status == "successful"){
-				setTimeout(this.props.updateEboxesStatus, 3000)
+				setTimeout(this.state.updateEboxesStatus, 3000)
 			}
 		})
 		.catch(err => {
@@ -60,10 +63,33 @@ export default class EboxSocketView extends React.Component {
 		})
 	}
 
+	switchSmartOffMode(){
+		this.setState({
+			smartOffMode: !this.state.smartOffMode
+		})
+		Utils.makeEboxServerRequest('/PowerPlans/SmartOff', 'POST', {
+			eboxID: this.state.eboxID,
+			socketNum: this.state.index,
+			mode: !this.state.smartOffMode
+		})
+		.then(res=>{
+			console.log(res)
+			if (res.successful){
+
+			}
+			else {
+				console.log(res.error)
+			}
+		})
+		.catch(err=>{
+			console.log(err)
+		})
+	}
+
 	renameEboxSocket(){
 		Utils.makeEboxServerRequest('/Management/Names', 'POST', {
-			eboxID: this.props.eboxID,
-			socketNum: this.props.index,
+			eboxID: this.state.eboxID,
+			socketNum: this.state.index,
 			name: this.state.newName
 		})
 		.then(res => {
@@ -74,7 +100,7 @@ export default class EboxSocketView extends React.Component {
 			}
 			else {
 				this.setState({
-					name: res.data.currentSocketNames[this.props.index],
+					name: res.data.currentSocketNames[this.state.index],
 					isRenaming: false
 				})
 			}
@@ -85,7 +111,7 @@ export default class EboxSocketView extends React.Component {
 	}
 
 	render(){
-		var nameOptions = this.props.socketNames.slice()
+		var nameOptions = this.state.socketNames.slice()
 		nameOptions.push("other")
 		var currentOption = 
 		(this.state.newName 
@@ -139,18 +165,22 @@ export default class EboxSocketView extends React.Component {
 			            </TouchableHighlight>
 		         	</View>
 		        </Modal>
+		        <Switch
+		        	onValueChange={this.switchSmartOffMode}
+		        	value={this.state.smartOffMode}
+		        />
 				<View 
 					style={[
 						{
 							paddingBottom: 10,
 							borderBottomWidth: 5
-						}, this.props.mode == 1 ? {
+						}, this.state.mode == 1 ? {
 							borderBottomColor: 'green'
 						} : {
 							borderBottomColor: 'transparent'
 						}
 					]}>
-					<HoldableOpacity duration={this.props.mode == 0 ? 0 : 1000}
+					<HoldableOpacity duration={this.state.mode == 0 ? 0 : 1000}
 						onHold={this.switchSocket}>
 						<Image 
 				            source={Constants.images.socketIcon}
@@ -162,16 +192,16 @@ export default class EboxSocketView extends React.Component {
 				            style={{
 				            	width: "100%", 
 				            	height: this.state.height,
-				            	backgroundColor: (this.props.mode == -1 ? 
+				            	backgroundColor: (this.state.mode == -1 ? 
 				            		offlineColor 
-				            		: socketColors[this.props.index]),
+				            		: socketColors[this.state.index]),
 				            	resizeMode: 'contain'
 				            }}
 				        />
 					</HoldableOpacity>
 				</View>
 				<Text style={{textAlign:'center'}}>
-					{(this.props.wattage || 0) + " W"}
+					{(this.state.wattage || 0) + " W"}
 				</Text>
 				<HoldableOpacity duration={500} 
 					style={{marginTop: 10}}

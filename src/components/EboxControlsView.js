@@ -101,13 +101,16 @@ export default class EboxControlsView extends React.Component {
 										index: i
 									})
 								}
-								updateEboxesStatus={this.props.updateEboxesStatus}
-								socketNames={this.state.socketNames}
-								mode={this.state.status == "offline" ? -1 : this.state.status[i]}
-								wattage={this.state.status == "offline" ? 0 : this.state.wattages[i]}
-								eboxID={this.state.id}
-								name={this.state.currentSocketNames[i]}
-								index={i}/>
+								data={{
+									updateEboxesStatus:this.props.updateEboxesStatus,
+									socketNames:this.state.socketNames,
+									mode:this.state.status == "offline" ? -1 : this.state.status[i],
+									wattage:this.state.status == "offline" ? 0 : this.state.wattages[i],
+									smartOffMode:this.state.smartOffModes[i],
+									eboxID:this.state.id,
+									name:this.state.currentSocketNames[i],
+									index:i
+								}}/>
 						)
 					})}
 				</View>
