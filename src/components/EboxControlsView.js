@@ -69,7 +69,9 @@ export default class EboxControlsView extends React.Component {
 					>
 		         	<View style={{marginTop: 22}}>
 			            <Text>Enter new name for EBox</Text>
-			            <TextInput onChangeText={(text)=>{this.setState({newName: text})}}>
+			            <TextInput onChangeText={(text)=>{
+			            	this.setState({newName: text, err:""})
+			            }}>
 			            	{this.state.newName}
 			            </TextInput>
 			            <Text>{this.state.err}</Text>

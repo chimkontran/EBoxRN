@@ -16,14 +16,12 @@ import EboxControlsView from 'eboxRN/src/components/EboxControlsView';
 export default class ManageScreen extends React.Component 
 {
 	static navigationOptions = {
-		tabBar: {
-			icon: ({ tintColor }) => (
+		tabBarIcon: ({ tintColor }) => (
 		        <Image
 		            source={Constants.images.outlinedLogo}
 		            style={[Constants.styles.MainStyles.icon, {tintColor: tintColor}]}
 		        />
 	        ),
-		}
 	}
 	constructor(props){
 		super(props);
@@ -48,7 +46,7 @@ export default class ManageScreen extends React.Component
 	updateEboxesStatus(){
 		Utils.makeEboxServerRequest('/Management', 'GET', {})
 		.then(res => {
-			console.log(res)
+			// console.log(res)
 			this.setState({
 				eboxesDataSource: this.state.eboxesDataSource.cloneWithRows(res.data.eboxes || [])
 			})
@@ -59,7 +57,7 @@ export default class ManageScreen extends React.Component
 	}
 
 	renderEboxView(eboxData){
-		console.log(eboxData)
+		// console.log(eboxData)
 		return (<EboxControlsView 
           			updateEboxesStatus={this.updateEboxesStatus}
           			data={eboxData} />)

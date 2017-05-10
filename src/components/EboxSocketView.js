@@ -147,7 +147,9 @@ export default class EboxSocketView extends React.Component {
 							)}
 						</Picker>
 						{this.state.showNameInput ?
-							(<TextInput onChangeText={(text)=>{this.setState({newName: text})}}>
+							(<TextInput onChangeText={(text)=>{
+								this.setState({newName: text, err: ""})
+							}}>
 				            	{this.state.newName}
 				            </TextInput>)
 				            : (<View/>)

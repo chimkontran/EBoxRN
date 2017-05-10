@@ -5,7 +5,7 @@ import {
 import Constants from 'eboxRN/src/Constants';
 
 async function makeEboxServerRequest(uri, method, params){
-	console.log("fetching")
+	console.log("fetching " + uri)
 	try{
 		var paramsStr = "";
 		var isPOST = method == "POST"
@@ -13,7 +13,7 @@ async function makeEboxServerRequest(uri, method, params){
 			for (var i = 0; i < Object.keys(params).length; i++){
 				var key = Object.keys(params)[i];
 				var value = params[key];
-				i > 0 && (paramsStr += "&");
+				paramsStr += i > 0 ? "&" : "?";
 				paramsStr += key + "=" + value;
 			}
 		}
@@ -27,12 +27,12 @@ async function makeEboxServerRequest(uri, method, params){
 			},
 			body: (isPOST && JSON.stringify(params)) || null
 		});
-		console.log("still fetching")
 		let res = await response.text();
 		if (!res) {
 			throw "No respond"
 		}
-
+		console.log("parsing")
+		// console.log(res)
 		res = JSON.parse(res);
 		if (res.code != "NOT_LOGGED_IN"){
 			return res

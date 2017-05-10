@@ -38,9 +38,7 @@ const MainNavigator = TabNavigator({
 });
 MainNavigator.navigationOptions = {
 	title: 'EBox',
-	header: {
-		visible: false
-	}
+	header: null
 }
 
 const AppNavigator = StackNavigator({
@@ -49,12 +47,10 @@ const AppNavigator = StackNavigator({
 	EBoxConfig: { screen: Constants.screens.EBoxConfigScreen}
 }, {
 	navigationOptions: {
-		header: {
-			style: {
-				backgroundColor: Constants.colors.primary,
-			},
-			tintColor: 'white'
-		}
+		headerStyle: {
+			backgroundColor: Constants.colors.primary,
+		},
+		headerTintColor: 'white'
 	}
 });
 
