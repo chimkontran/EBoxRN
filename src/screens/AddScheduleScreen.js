@@ -8,6 +8,7 @@ import {
   Button,
   Modal,
   Text,
+  ScrollView,
   View
 } from 'react-native';
 
@@ -27,18 +28,21 @@ export default class AddScheduleScreen extends React.Component {
       name: "",
       time: "",
       date: "",
+      status: "",
       repeatDays: [],
+      repeatDaysLabel: [],
       commands: [],
       isChoosingRepeatDay: false,
-      isChoosingCommand: false,
       errorMess: "",
       isDateTimePickerVisible: false,
-      eboxCommands: {}
+      eboxCommands: {},
+      eboxCommandIdOrder: [],
+      eboxCommandCounter: 0
     }
 
     Utils.makeEboxServerRequest('/Management', 'GET', {})
 		.then(res => {
-      this.setState({eboxes: res.data.eboxes})
+      this.setState({eboxes: res.data.eboxes,})
       this.addCommandView()
       console.log(this.state.eboxes);
 
@@ -54,7 +58,21 @@ export default class AddScheduleScreen extends React.Component {
     // get DATA
     var navigationParams = this.props.navigation.state.params
     console.log(this.props.navigation.state)
+    this.setState({scheduleID: navigationParams.data._id})
+    if (this.state.scheduleID != "")
+    {
+        this.setState({status: "checked"})
+    }
     Object.assign(this.state, navigationParams.data)
+    this.state.commands.map(command=>{
+      if (command.eboxID in this.state.eboxCommands){
+        this.state.eboxCommands[command.eboxID][command.socketNum] = command.mode
+      }
+      else {
+        this.state.eboxCommands[command.eboxID] = [-1,-1,-1,-1]
+        this.state.eboxCommandIdOrder.push(command.eboxID)
+      }
+    })
     this.setState({})
   }
 
@@ -79,10 +97,12 @@ export default class AddScheduleScreen extends React.Component {
 
   addCommandView(){
     var notAddedEboxes = this.getNotScheduledEboxes();
+    console.log(notAddedEboxes)
     if (notAddedEboxes.length > 0){
       var eboxID = notAddedEboxes[0];
       var eboxName = this.getEboxName(eboxID)
       this.state.eboxCommands[eboxID] = [-1,-1,-1,-1]
+      this.state.eboxCommandIdOrder.push(eboxID)
       this.setState({})
       // console.log("added");
     }
@@ -128,35 +148,8 @@ export default class AddScheduleScreen extends React.Component {
     this._hideDateTimePicker();
   };
 
-  _addSchedules = () =>
-  {
-    var object = {
-      scheduleID: this.state.scheduleID,
-      name: this.state.name,
-      time: this.state.time,
-      repeatDays: this.state.repeatDays,
-      commands: JSON.stringify(this.state.commands),
-    };
-
-    // console.log(JSON.stringify(object));
-
-    let response = Utils.makeEboxServerRequest('/Schedules', 'POST', {
-    name: this.state.name,
-    time: this.state.time,
-    repeatDays: this.state.repeatDays,
-    commands: this.state.commands});
-    if (response.status == "successful")
-    {
-        // console.log("Successfully add schedule: " + this.state.name);
-    }
-    else
-    {
-        // console.log(response);
-        // console.log("Failed to add schedules");
-    }
-  }
-
-  _getEbox = async() => {
+  
+  _getSchedule = async() => {
     let response = await Utils.makeEboxServerRequest('/Schedules', 'GET', {})
     console.log(response['data'])
   }
@@ -172,29 +165,24 @@ export default class AddScheduleScreen extends React.Component {
   }
 
   _confirmRepeatDay = () => {
-    this.setState({isChoosingRepeatDay:false});
+    this.state.repeatDaysLabel = [];
     console.log("Repeat Days: " + this.state.repeatDays);
+    var daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    this.state.repeatDaysLabel = this.state.repeatDays.map(repeatDay=>daysInWeek[repeatDay])
+    this.setState({isChoosingRepeatDay:false});
+    console.log(this.state.repeatDaysLabel)
   }
 
-  // {/* Modal commands */}
-  _showCommand = () => {
-      this.setState({isChoosingCommand:true});
-  }
+  // remove a command
+  removeCommand = () => {}
 
-  _dismissCommand = () => {
-      this.setState({isChoosingCommand:false, commands: ""});
-      console.log("Command cancel: " + this.state.commands);
-  }
-
-  _confirmCommand = () => {
-    this.setState({isChoosingCommand:false});
-
+  // {/* Confirm schedule commands */}
+  async _confirmSchedule() {
     // Get eboxCommands mode,socketnum,
     var eboxIDs = Object.keys(this.state.eboxCommands); // Array of Ebox IDs
-    // console.log("--------------------");
-    // console.log(eboxIDs);
-    // console.log("--------------------");
-    for (var i = 0; i < eboxIDs.length; i++) {
+
+    for (var i = 0; i < eboxIDs.length; i++) 
+    {
       var eboxID = eboxIDs[i]
       var modeArray = this.state.eboxCommands[eboxID]
       for (var j = 0; j < modeArray.length; j++) {
@@ -203,18 +191,58 @@ export default class AddScheduleScreen extends React.Component {
           continue;
         }
 
-        console.log("--------------------");
         this.state.commands.push({
           eboxID: eboxID,
           socketNum: j,
-          mode: modeArray[j]})
+          mode: modeArray[j]});
       }
-      console.log(this.state.commands);
     }
+    
+    
+        // console.log("--------------------");
+        //   console.log(this.state.commands);
 
+
+    // POST SCHEDULE
+    try {
+      var params = {
+        scheduleID: this.state.scheduleID,
+        name: this.state.name,
+        time: this.state.time,
+        repeatDays: this.state.repeatDays,
+        commands: this.state.commands,
+      }
+      let res = await Utils.makeEboxServerRequest('/Schedules', 'POST', params)
+      console.log(res);
+      if (res.status == "successful"){
+        console.log(params);
+        this.props.navigation.state.params.refreshSchedules();
+        this.props.navigation.goBack();
+        console.log(this.props.navigation.state.params.refreshSchedules);
+      } else if (res.status == "failed") {
+        console.log(res.status);
+        this.setState({errorMess: res.mess})
+
+      }
+
+    } catch(error) {
+      console.log("error: " + error);
+    }
   }
 
-
+  _deleteSchedule = async () => {
+      try
+      {
+        let res = await Utils.makeEboxServerRequest('/Schedules/Cancel', 'POST', {scheduleID: this.state.scheduleID})
+        this.props.navigation.state.params.refreshSchedules();
+        this.props.navigation.goBack();
+        console.log(res);
+      }
+      catch(error)
+      {
+        this.setState({errorMess: 'Cannot connect to server. Delete failed!'})
+      }
+  }
 
   render(){
     if (this.state.eboxes.length == 0){
@@ -224,10 +252,96 @@ export default class AddScheduleScreen extends React.Component {
         </View>)
     }
 
-    var addedEboxIDs = Object.keys(this.state.eboxCommands);
     var notAddedEboxes = this.getNotScheduledEboxes();
+    console.log(this.state.eboxCommands)
+    console.log(this.state.eboxCommandIdOrder)
+
+    var deleteButton = []
+    console.log(this.state.scheduleID)
+    if(this.state.scheduleID != null)
+    {
+      deleteButton.push(
+          <TouchableOpacity style={styles.button} onPress={this._deleteSchedule.bind(this)}>
+            <Text style={styles.buttonText}>Delete schedule</Text>
+          </TouchableOpacity>
+      );
+    }
+
+    const eboxCommandsView = this.state.eboxCommandIdOrder.map((eboxID,pickerIndex) => {
+              var _this = this;
+              var eboxCommand = this.state.eboxCommands[eboxID]
+              var eboxIDs = notAddedEboxes.slice();
+              eboxIDs.push(eboxID);
+              var updateEboxCommand = function(eboxID, eboxCommand){
+                return function(newEboxID){
+                  console.log(eboxID)
+                  console.log(newEboxID)
+                  delete _this.state.eboxCommands[eboxID]
+                  var index = _this.state.eboxCommandIdOrder.indexOf(eboxID)
+                  if (index !== -1 ){
+                    console.log(index)
+                    _this.state.eboxCommandIdOrder[index] = newEboxID
+                  }
+                  // console.log(this.state.eboxCommandIdOrder)
+                  _this.state.eboxCommands[newEboxID] = eboxCommand
+                  _this.setState({})
+                
+                }
+              }
+              {/* Show Socket Name*/}
+              return (
+                <View key={this.state.eboxCommandCounter++}>
+                  <View style={{flexDirection:'row'}}>
+                    <Picker selectedValue={eboxID} style={{width: 300}}
+                      onValueChange={updateEboxCommand(eboxID,eboxCommand)}>
+                      {eboxIDs.map(
+                        (eboxIDChoice, i) => {
+                          return (
+                              <Picker.Item key={pickerIndex + "-" + i} label={this.getEboxName(eboxIDChoice) || "Unknown"} value={eboxIDChoice} />
+                          )
+                        })
+                      }
+                    </Picker>
+                    <Button style={{height:50}}
+                    title=" Del "
+                    onPress={this.removeCommand()}
+                    />
+                  </View>
+                  {/* Show Name of each Socket
+                    console.log(this.state.eboxes[0].currentSocketNames[0]);*/}
+                  <View style={{flexDirection:'row'}}>
+                    {eboxCommand.map((mode,index)=>{
+                      return (
+                        <View key={pickerIndex+index} style={{flex: 1, flexDirection:'row'}}>
+
+                          <Text style={{flex:1}} selectedValue={mode} onValueChange={(newMode) => {
+                            this.state.eboxCommands[eboxID][index] = newMode
+                            this.setState({})
+                          }}> Socket {index+1}</Text>
+                        </View>
+                      )})}
+                  </View>
+                  {/* Show Mode of each Socket*/}
+                  <View style={{flexDirection:'row'}}>
+                    {eboxCommand.map((mode,index)=>{
+                      return (
+                        <View key={pickerIndex+index} style={{flex: 1, flexDirection:'row'}}>
+
+                          <Picker style={{flex:1}} selectedValue={mode} onValueChange={(newMode) => {
+                            this.state.eboxCommands[eboxID][index] = newMode
+                            this.setState({})
+                          }}>
+                            <Picker.Item label="_" value={-1} />
+                            <Picker.Item label="Off" value={0} />
+                            <Picker.Item label="On" value={1} />
+                          </Picker>
+                        </View>
+                      )})}
+                  </View>
+                </View>
+              )})
     return(
-      <View>
+      <ScrollView style={{flex:1}}>
 {/*
       {this.state.eboxes.map(ebox => {
         return (
@@ -235,7 +349,6 @@ export default class AddScheduleScreen extends React.Component {
         )
       })}
       */}
-
 
         {/* Input Name*/}
         <Text>Schedule name: </Text>
@@ -297,96 +410,32 @@ export default class AddScheduleScreen extends React.Component {
         <TouchableOpacity
           onPress={this._showRepeatDay.bind(this)}>
           <Text>Choose repeat </Text>
-          <Text>{String(this.state.repeatDays)}</Text>
+          <Text>{String(this.state.repeatDaysLabel)}</Text>
         </TouchableOpacity>
 
 
         {/* Modal for choosing Command*/}
-        <Modal
-          visible={this.state.isChoosingCommand}
-          onRequestClose={()=>{}}>
-          <View style={{marginTop: 50}}>
+          <View style={{marginTop: 10}}>
 
             {/* Choose Ebox, choose socket, choose mode*/}
-            {addedEboxIDs.map(eboxID => {
-              var eboxCommand = this.state.eboxCommands[eboxID]
-              var eboxIDs = notAddedEboxes.slice();
-              eboxIDs.push(eboxID);
-              {/* Show Socket Name*/}
-              return (
-                <View key={eboxID}>
-                  <Picker selectedValue={eboxID}
-                    onValueChange={(newEboxID) => {
-                      this.state.eboxCommands[newEboxID] = eboxCommand
-                      delete this.state.eboxCommands[eboxID]
-                      this.setState({})
-                    }}>
-                    {eboxIDs.map(eboxID => {
-                      return (
-                          <Picker.Item key={eboxID} label={this.getEboxName(eboxID)} value={eboxID} />
-                      )})}
-                  </Picker>
-                  {/* Show Name of each Socket
-                    console.log(this.state.eboxes[0].currentSocketNames[0]);*/}
-                  <View style={{flexDirection:'row'}}>
-                    {eboxCommand.map((mode,index)=>{
-                      return (
-                        <View key={eboxID+index} style={{flex: 1, flexDirection:'row'}}>
-
-                          <Text style={{flex:1}} selectedValue={mode} onValueChange={(newMode) => {
-                            this.state.eboxCommands[eboxID][index] = newMode
-                            this.setState({})
-                          }}> Socket {index+1}</Text>
-                        </View>
-                      )})}
-                  </View>
-                  {/* Show Mode of each Socket*/}
-                  <View style={{flexDirection:'row'}}>
-                    {eboxCommand.map((mode,index)=>{
-                      return (
-                        <View key={eboxID+index} style={{flex: 1, flexDirection:'row'}}>
-
-                          <Picker style={{flex:1}} selectedValue={mode} onValueChange={(newMode) => {
-                            this.state.eboxCommands[eboxID][index] = newMode
-                            this.setState({})
-                          }}>
-                            <Picker.Item label="_" value={-1} />
-                            <Picker.Item label="Off" value={0} />
-                            <Picker.Item label="On" value={1} />
-                          </Picker>
-                        </View>
-                      )})}
-                  </View>
-                </View>
-              )})}
-
-              {/* Confirm Repeat*/}
-              <TouchableOpacity
-                style={styles.button}
-                onPress={this._confirmCommand.bind(this)}>
-                  <Text style={styles.buttonText}>Confirm</Text>
-              </TouchableOpacity>
-
-              {/* Cancel Repeat*/}
-              <TouchableOpacity style={styles.button}
-              onPress={this._dismissCommand.bind(this)}>
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
+            {eboxCommandsView}
           </View>
-        </Modal>
 
         {/* Show ebox commands*/}
-        <TouchableOpacity
-        onPress={this._showCommand.bind(this)}>
-  				<Text >Add commands</Text>
+        <TouchableOpacity style={styles.button}
+        onPress={this.addCommandView.bind(this)}>
+  				<Text style={styles.buttonText}>Add commands</Text>
   			</TouchableOpacity>
+
+        <Text style={styles.error}>{this.state.errorMess}</Text>
 
         {/* Confirm Schedule */}
-        <TouchableOpacity style={styles.button} onPress = {this._getEbox.bind(this)}>
-  				<Text style = {styles.buttonText}>Confirm schedule</Text>
+        <TouchableOpacity style={styles.button} onPress = {this._confirmSchedule.bind(this)}>
+  				<Text style={styles.buttonText}>Confirm schedule</Text>
   			</TouchableOpacity>
 
-      </View>
+        {deleteButton}
+      </ScrollView>
     );
   }
 }
@@ -404,6 +453,11 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: '#FFF',
     alignSelf: 'center'
+  },
+
+    error: {
+    color: 'red',
+    paddingTop: 10
   },
 
   input: {

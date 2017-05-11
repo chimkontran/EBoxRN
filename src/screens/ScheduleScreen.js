@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   AsyncStorage,
   Text,
+  ScrollView,
 	Image,
   View
 } from 'react-native';
@@ -42,13 +43,14 @@ export default class ScheduleScreen extends React.Component {
       objectData: [],
     }
 
-    var getEbox = this._getEbox.bind(this);
-    getEbox();
+    this._getSchedule = this._getSchedule.bind(this);
+    this._getSchedule();
   }
 
-  // {/* Run _getEbox on constructor */}
-  _getEbox = async() => {
+  // {/* Run _getSchedule on constructor */}
+  _getSchedule = async() => {
     let response = await Utils.makeEboxServerRequest('/Schedules', 'GET', {})
+    this.state.objectData = []
     // {/* var i = 1 in order to avoid 0 (currently error, will change back to 0 by production) */}
     for (var i = 1; i < Object.keys(response['data']).length; i++)
     {
@@ -67,20 +69,24 @@ export default class ScheduleScreen extends React.Component {
   }
 
   editSchedule(scheduleData){
-    this.props.navigation.navigate('AddSchedule', {data: scheduleData})
+    this.props.navigation.navigate('AddSchedule', {data: scheduleData, refreshSchedules: this._getSchedule})
   }
 
 	render() {
       // {/* Fetch information dynamic to render view */}
       var fetchInformation = [];
+
+      var daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
       for (var i = 0; i < this.state.objectData.length; i++) {
         var scheduleData = this.state.objectData[i]
         fetchInformation.push(
-          <View style={{"paddingBottom": 30}}>
+          <View key={i} style={{"paddingBottom": 30}}>
             <TouchableOpacity onPress={this.editSchedule.bind(this, scheduleData)}>
               <Text>Name: {scheduleData['name']}</Text>
               <Text>Time: {scheduleData['time']}</Text>
-              <Text>Repeat Days: {scheduleData['repeatDays']}</Text>
+              <Text>Repeat Days: {
+                scheduleData['repeatDays'].map(repeatDay=>daysInWeek[repeatDay]+' ')
+              }</Text>
             </TouchableOpacity>
           </View>
         );
@@ -88,10 +94,11 @@ export default class ScheduleScreen extends React.Component {
 
 	    return (
         <View style={{position:'relative', flex:1}}>
+        <ScrollView>
           {fetchInformation}
-
+        </ScrollView>
           <TouchableOpacity style={styles.button}
-          onPress= {() => this.props.navigation.navigate('AddSchedule', {data: {}})}>
+          onPress= {() => this.props.navigation.navigate('AddSchedule', {data: {}, refreshSchedules: this._getSchedule})}>
             <Image
               source={Constants.images.plusIcon}
               style={styles.addButton}
