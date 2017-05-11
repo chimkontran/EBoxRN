@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   TextInput,
-  TouchableHighlight,
+  TouchableOpacity,
   AsyncStorage,
   Text, 
   View
@@ -11,25 +11,64 @@ import {
 import Utils from 'eboxRN/src/utils/Utils';
 
 export default class LogoutForm extends React.Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      email: "",
+      errorMess: ""
+    }
+  }
+
+  async getUserInfo(){
+    try{
+      var credentials = await AsyncStorage.getItem("credentials")
+      credentials = JSON.parse(credentials)
+      this.setState({
+        email: credentials.email
+      })
+    }
+    catch(err){
+      console.log(err)
+    }
+  }
+
+  componentDidMount(){
+    this.getUserInfo()
+  }
+
 	async onLogoutPressed(){
+    this.setState({
+        errorMess: ""
+      })
 		try {
 			let response = await Utils.makeEboxServerRequest('/Users/Logout', 'POST', {})
 			if (response.status == "successful"){
 				await AsyncStorage.removeItem("credentials")
 				Utils.globalFunctions.setLoginState(false)
 			}
-
-		} catch(error) {
-			console.log(error)
-		}
+      else {
+        this.setState({
+          errorMess: res.mess
+        })
+      }
+    } catch(error) {
+      this.setState({
+        errorMess: "Cannot connect"
+      })
+    }
 	}
 
 	render(){
 		return(
-			<TouchableHighlight  style={styles.button}
-			onPress={this.onLogoutPressed.bind(this)}>
-				<Text style={styles.buttonText}>Log Out</Text>
-			</TouchableHighlight>
+      <View>
+        <Text style={{fontWeight: 'bold'}}>{this.state.email}</Text>
+        <Text style={{color:'red'}}>{this.state.errorMess}</Text>
+
+  			<TouchableOpacity
+  			onPress={this.onLogoutPressed.bind(this)}>
+          <Text>Log out</Text>
+  			</TouchableOpacity>
+      </View>
 			);
 	}
 }

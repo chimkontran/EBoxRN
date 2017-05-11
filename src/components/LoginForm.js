@@ -22,14 +22,23 @@ export default class LoginForm extends React.Component {
 	}
 
 	async onLoginPressed() {
+		this.setState({
+			errorMess: ""
+		})
 		try{
 			let res = await Utils.loginEboxServer(this.state.email, this.state.password)
 			if (res.status == "successful"){
 				this.props.setLoginState(true)
 			}
-
+			else {
+				this.setState({
+					errorMess: res.mess
+				})
+			}
 		} catch(error) {
-			console.log("error: " + error);
+			this.setState({
+				errorMess: "Cannot connect"
+			})
 		}
 
 	}

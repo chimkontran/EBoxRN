@@ -7,9 +7,10 @@ import {
 	Image,
 	StyleSheet,
 	View,
-	Picker
+	Picker,
+	Dimensions
 } from 'react-native';
-import { Bar } from 'react-native-pathjs-charts'
+import { Bar, StockLine } from 'react-native-pathjs-charts'
 import Moment from 'moment'
 
 import Constants from 'eboxRN/src/Constants';
@@ -25,6 +26,8 @@ const styles = StyleSheet.create({
 });
 
 const CHART_TYPES = ['Ebox', 'device', 'hour', 'day', 'month']
+
+const SCREEN_WIDTH = Dimensions.get('window').width
 
 export default class ReportScreen extends React.Component {
 	static navigationOptions = {
@@ -47,11 +50,12 @@ export default class ReportScreen extends React.Component {
 			powerByDevice: {},
 			powerByEbox: {},
 			powerThisMonth: 0,
-			chartTypeIndex: 1,
+			chartTypeIndex: 0,
 			chartData: [],
 			chartTitle: "Power consumption (kWh)",
 			pricesData: [],
 			suggestions: [],
+			dataAvailable: false,
 			loaded: false
 		}
 		this.fetchReportData = this.fetchReportData.bind(this)
@@ -83,12 +87,31 @@ export default class ReportScreen extends React.Component {
 		var chartData = [];
 		Object.keys(dataSource).map(
 			(name, i)=>{
-				chartData.push([{
-					v: dataSource[name] / 1000,
-					name: name
-				}])
+				if (chartTypeIndex < 3){
+					chartData.push([{
+						v: dataSource[name] / 1000,
+						name: name
+					}])
+				}
+				else {
+					if (chartData.length == 0) {
+						chartData = [[]]
+					}
+					chartData[0].push({
+						x: i,
+						y: dataSource[name] / 1000,
+						label: name
+					})
+				}
 			}
 		)
+		if (chartTypeIndex >= 3 && chartData[0].length == 1){
+			chartData[0].push({
+				x: 0,
+				y: 0,
+				label: ""
+			})
+		}
 		console.log(chartData)
 		this.setState({
 			chartData: chartData,
@@ -109,7 +132,7 @@ export default class ReportScreen extends React.Component {
 
 		this.setState({
 			loaded: false,
-			numReportDays: numReportDays
+			numReportDays: numReportDays,
 		})
 		var date = Moment()
 					.subtract(this.state.numReportDays,'d')
@@ -123,14 +146,15 @@ export default class ReportScreen extends React.Component {
 					powerByDay = this.state.powerByDay,
 					powerByMonth = this.state.powerByMonth,
 					powerByDevice = this.state.powerByDevice,
-					powerByEbox = this.state.powerByEbox
+					powerByEbox = this.state.powerByEbox,
+					dataAvailable = false,
 					firstDate = -1;
 				res.data.map((eboxData, i)=>{
 					var eboxName = eboxData.name || "unknown"
 					powerByEbox[eboxName] = 0
 					eboxData.powerLogs.map(powerLog=>{
 						var power = Math.round(parseFloat(powerLog.power))
-						var deviceName = powerLog.deviceName
+						var deviceName = powerLog.deviceName || "unknown"
 						var moment = Moment(powerLog.time).subtract(1,'hour')
 						if (firstDate == -1) firstDate = moment
 						var hour = moment.get('hour')
@@ -147,41 +171,48 @@ export default class ReportScreen extends React.Component {
 
 						powerByMonth[month] = power + (powerByMonth[month] || 0)
 					})
+					if (eboxData.powerLogs.length > 0) {
+						dataAvailable = true
+					}
 				})
-				for (var hour = 0; hour < 24; hour++){
-					if (!(hour in powerByHour)){
-						powerByHour[hour] = 0;
-					}
-				}
-				var currentMoment = Moment().add(1,'day').startOf('day')
 
-				var days = Object.keys(powerByDay)
-				if (days.length > 0){
-					for (var moment = firstDate.clone(); moment.isBefore(currentMoment); moment.add(1,'day')){
-						var day = moment.format("DD-MM")
-						if (!(day in powerByDay)){
-							powerByDay[day] = 0;
+				if (dataAvailable){
+					for (var hour = 0; hour < 24; hour++){
+						if (!(hour in powerByHour)){
+							powerByHour[hour] = 0;
 						}
 					}
-				}
 
-				var months = Object.keys(powerByMonth)
-				var thisMonth = currentMoment.subtract(1,'month').format('MM-YYYY')
-				if (months.length > 0){
-					for (var moment = firstDate.clone(); moment.isBefore(currentMoment); moment.add(1,'day')){
-						var month = moment.format("MM-YYYY")
-						if (!(month in powerByMonth)){
-							powerByMonth[month] = 0
+					var days = Object.keys(powerByDay)
+					if (days.length > 0){
+						var startOfTomorrow = Moment().add(1,'day').startOf('day')
+						for (var moment = firstDate.clone(); moment.isBefore(startOfTomorrow); moment.add(1,'day')){
+							var day = moment.format("DD-MM")
+							if (!(day in powerByDay)){
+								powerByDay[day] = 0;
+							}
 						}
 					}
-					this.state.powerThisMonth = powerByMonth[thisMonth] / 1000
+
+					var months = Object.keys(powerByMonth)
+					if (months.length > 0){
+						var startOfNextMonth = Moment().add(1,'M').startOf('month')
+						var thisMonth = Moment().format('MM-YYYY')
+						for (var moment = firstDate.clone(); moment.isBefore(startOfNextMonth); moment.add(1,'M')){
+							var month = moment.format("MM-YYYY")
+							if (!(month in powerByMonth)){
+								powerByMonth[month] = 0
+							}
+						}
+						this.state.powerThisMonth = powerByMonth[thisMonth] / 1000
+					}
+					this.updateChartData(this.state.chartTypeIndex);
 				}
-				this.updateChartData(this.state.chartTypeIndex);
 				this.setState({
 					data: res.data,
 					loaded: true
 				})
-				console.log(this.state)
+				// console.log(this.state)
 			}
 			else {
 				console.log(res.error)
@@ -241,8 +272,8 @@ export default class ReportScreen extends React.Component {
 	}
 
 	render() {
-		let options = {
-			width: 300,
+		let barChartOptions = {
+			width: SCREEN_WIDTH*0.8,
 			height: 300,
 			margin: {
 				top: 20,
@@ -262,7 +293,7 @@ export default class ReportScreen extends React.Component {
 				showLines: true,
 				showLabels: true,
 				showTicks: true,
-				zeroAxis: false,
+				zeroAxis: true,
 				orient: 'bottom',
 				label: {
 					fontFamily: 'Arial',
@@ -287,6 +318,56 @@ export default class ReportScreen extends React.Component {
 				}
 			}
 		}
+
+		let lineChartOptions = {
+			width: SCREEN_WIDTH*0.8,
+			height: 300,
+			color: '#2980B9',
+			margin: {
+				top: 20,
+				left: 35,
+				bottom: 30,
+				right: 20
+			},
+			animate: {
+				type: 'delayed',
+				duration: 200
+			},
+			axisX: {
+				showAxis: true,
+				showLines: true,
+				showLabels: true,
+				showTicks: true,
+				zeroAxis: false,
+				orient: 'bottom',
+				tickValues: [],
+				labelFunction: ((i) => {
+					var data = this.state.chartData[0][i]
+					return data ? data.label : ""
+				}),
+				label: {
+					fontFamily: 'Arial',
+					fontSize: 8,
+					fontWeight: true,
+					fill: '#34495E'
+				}
+			},
+			axisY: {
+				showAxis: true,
+				showLines: true,
+				showLabels: true,
+				showTicks: true,
+				zeroAxis: false,
+				orient: 'left',
+				tickValues: [],
+				label: {
+					fontFamily: 'Arial',
+					fontSize: 8,
+					fontWeight: true,
+					fill: '#34495E'
+				}
+			}
+		}
 		var billText = (<Text/>)
 		if (this.state.powerThisMonth > 0 && this.state.pricesData.length>0){
 			var costs = this.calculateBill(this.state.powerThisMonth)
@@ -296,23 +377,26 @@ export default class ReportScreen extends React.Component {
 		var chartView = (<View/>)
 		if (this.state.loaded){
 			if (this.state.chartData.length > 0){
-			chartView = (<View>
-	    					<Text>{this.state.chartTitle}</Text>
-	    					<Bar data={this.state.chartData} options={options} accessorKey='v'/>
+				console.log(this.state.chartData)
+				chartView = (<View>
+		    					<Text>{this.state.chartTitle}</Text>
+		    					{this.state.chartTypeIndex < 3 ?
+		    						(<Bar data={this.state.chartData} options={barChartOptions} accessorKey='v'/>)
+		    						:(<StockLine data={this.state.chartData} options={lineChartOptions} xKey='x' yKey='y' />)}
 
-	    					<Text>Show data by: </Text>
-	    					<Picker
-								selectedValue={this.state.chartTypeIndex}
-								onValueChange={(chartTypeIndex) => {
-									this.updateChartData(chartTypeIndex)
-								}}>
-								{CHART_TYPES.map((chartType, i) => 
-									<Picker.Item key={i} label={chartType} value={i} />
-								)}
-							</Picker>
-	    					<Text>This month's consumption: {this.state.powerThisMonth} kWh</Text>
-	    					{billText}
-	    				</View>)
+		    					<Text>Show data by: </Text>
+		    					<Picker
+									selectedValue={this.state.chartTypeIndex}
+									onValueChange={(chartTypeIndex) => {
+										this.updateChartData(chartTypeIndex)
+									}}>
+									{CHART_TYPES.map((chartType, i) => 
+										<Picker.Item key={i} label={chartType} value={i} />
+									)}
+								</Picker>
+		    					<Text>This month's consumption: {this.state.powerThisMonth} kWh</Text>
+		    					{billText}
+		    				</View>)
 			}
 			else {
 				chartView = (<Text>No data available</Text>)

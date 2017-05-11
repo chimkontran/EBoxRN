@@ -32,7 +32,7 @@ async function makeEboxServerRequest(uri, method, params){
 			throw "No respond"
 		}
 		console.log("parsing")
-		// console.log(res)
+		console.log(res)
 		res = JSON.parse(res);
 		if (res.code != "NOT_LOGGED_IN"){
 			return res

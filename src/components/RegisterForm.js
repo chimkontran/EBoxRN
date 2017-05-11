@@ -11,8 +11,8 @@ import {
 import Utils from 'eboxRN/src/utils/Utils';
 
 class RegisterForm extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 
 		this.state = {
 			email: "",
@@ -24,6 +24,9 @@ class RegisterForm extends React.Component {
 
 	async onRegisterPressed(){
 		try{
+			this.setState({
+				errorMess: ""
+			})
 			var params = {
 				email: this.state.email,
 				password: this.state.password,
@@ -35,8 +38,15 @@ class RegisterForm extends React.Component {
 				await AsyncStorage.setItem('credentials', JSON.stringify(params))
 				this.props.setLoginState(true)
 			}
+			else {
+				this.setState({
+					errorMess: res.mess
+				})
+			}
 		} catch(error) {
-			console.log("error: " + error);
+			this.setState({
+				errorMess: "Cannot connect"
+			})
 		}
 	}
 
