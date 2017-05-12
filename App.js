@@ -5,9 +5,9 @@ import {
 	Button
 } from 'react-native';
 
-import { 
-	StackNavigator, 
-	TabNavigator 
+import {
+	StackNavigator,
+	TabNavigator
 } from 'react-navigation';
 
 import Constants from 'eboxRN/src/Constants';
@@ -44,7 +44,8 @@ MainNavigator.navigationOptions = {
 const AppNavigator = StackNavigator({
 	Main: { screen: MainNavigator },
 	User: { screen: Constants.screens.UserScreen },
-	EBoxConfig: { screen: Constants.screens.EBoxConfigScreen}
+	EBoxConfig: { screen: Constants.screens.EBoxConfigScreen},
+	AddSchedule: {screen: Constants.screens.AddSchedule}
 }, {
 	navigationOptions: {
 		headerStyle: {

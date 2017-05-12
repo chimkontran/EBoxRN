@@ -4,7 +4,7 @@ import {
   TextInput,
   TouchableHighlight,
   AsyncStorage,
-  Text, 
+  Text,
   View
 } from 'react-native';
 
@@ -18,7 +18,7 @@ export default class LoginForm extends React.Component {
 			email: "",
 			password: "",
 			errorMess:""
-		}		
+		}
 	}
 
 	async onLoginPressed() {
@@ -57,14 +57,14 @@ export default class LoginForm extends React.Component {
 					onChangeText={ (text)=> this.setState({password:text}) }
 					placeholder="Password" secureTextEntry={true}
 				/>
-				
-				
+
+
 				<TouchableHighlight  style={styles.button}
 				onPress={this.onLoginPressed.bind(this)}>
 					<Text style={styles.buttonText}>Login</Text>
 				</TouchableHighlight>
 
-				
+        <Text style={{color: 'black', textAlign: 'center'}}>Do not have an account yet?</Text>				
 			</View>
 
 				// <ActivityIndicatorIOS animating={this.state.showProgress} size="large" style={styles.loader} />
@@ -106,4 +106,3 @@ const styles = StyleSheet.create({
     marginTop: 20
   }
 });
-

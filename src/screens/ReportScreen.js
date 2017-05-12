@@ -55,6 +55,9 @@ export default class ReportScreen extends React.Component {
 			chartTitle: "Power consumption (kWh)",
 			pricesData: [],
 			suggestions: [],
+			hours: [],
+			months: [],
+			days: [],
 			dataAvailable: false,
 			loaded: false
 		}
@@ -65,27 +68,33 @@ export default class ReportScreen extends React.Component {
 
 	updateChartData(chartTypeIndex){
 		var dataSource = {};
+		var dataSourceOrder = []
 		switch(chartTypeIndex){
 			case 0:
 				dataSource = this.state.powerByEbox
+				dataSourceOrder = Object.keys(dataSource)
 				break;
 			case 1: 
 				dataSource = this.state.powerByDevice
+				dataSourceOrder = Object.keys(dataSource)
 				break;
 			case 2:
 				dataSource = this.state.powerByHour
+				dataSourceOrder = this.state.hours
 				break;
 			case 3:
 				dataSource = this.state.powerByDay
+				dataSourceOrder = this.state.days
 				break;
 			case 4:
 				dataSource = this.state.powerByMonth
+				dataSourceOrder = this.state.months
 				break;
 			default:
 				break;	
 		}
 		var chartData = [];
-		Object.keys(dataSource).map(
+		dataSourceOrder.map(
 			(name, i)=>{
 				if (chartTypeIndex < 3){
 					chartData.push([{
@@ -107,11 +116,12 @@ export default class ReportScreen extends React.Component {
 		)
 		if (chartTypeIndex >= 3 && chartData[0].length == 1){
 			chartData[0].push({
-				x: 0,
+				x: 1,
 				y: 0,
 				label: ""
 			})
 		}
+		console.log(dataSource)
 		console.log(chartData)
 		this.setState({
 			chartData: chartData,
@@ -177,13 +187,16 @@ export default class ReportScreen extends React.Component {
 				})
 
 				if (dataAvailable){
+					this.state.hours = []
 					for (var hour = 0; hour < 24; hour++){
 						if (!(hour in powerByHour)){
 							powerByHour[hour] = 0;
 						}
+						this.state.hours.push(hour)
 					}
 
 					var days = Object.keys(powerByDay)
+					this.state.days = []
 					if (days.length > 0){
 						var startOfTomorrow = Moment().add(1,'day').startOf('day')
 						for (var moment = firstDate.clone(); moment.isBefore(startOfTomorrow); moment.add(1,'day')){
@@ -191,10 +204,12 @@ export default class ReportScreen extends React.Component {
 							if (!(day in powerByDay)){
 								powerByDay[day] = 0;
 							}
+							this.state.days.push(day)
 						}
 					}
 
 					var months = Object.keys(powerByMonth)
+					this.state.months = []
 					if (months.length > 0){
 						var startOfNextMonth = Moment().add(1,'M').startOf('month')
 						var thisMonth = Moment().format('MM-YYYY')
@@ -203,6 +218,7 @@ export default class ReportScreen extends React.Component {
 							if (!(month in powerByMonth)){
 								powerByMonth[month] = 0
 							}
+							this.state.months.push(month)
 						}
 						this.state.powerThisMonth = powerByMonth[thisMonth] / 1000
 					}

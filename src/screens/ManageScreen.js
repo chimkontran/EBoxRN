@@ -13,7 +13,7 @@ import Utils from 'eboxRN/src/utils/Utils';
 
 import EboxControlsView from 'eboxRN/src/components/EboxControlsView';
 
-export default class ManageScreen extends React.Component 
+export default class ManageScreen extends React.Component
 {
 	static navigationOptions = {
 		tabBarIcon: ({ tintColor }) => (
@@ -57,7 +57,6 @@ export default class ManageScreen extends React.Component
 	}
 
 	renderEboxView(eboxData){
-		// console.log(eboxData)
 		return (<EboxControlsView 
           			updateEboxesStatus={this.updateEboxesStatus}
           			data={eboxData} />)

@@ -27,12 +27,13 @@ async function makeEboxServerRequest(uri, method, params){
 			},
 			body: (isPOST && JSON.stringify(params)) || null
 		});
+   
 		let res = await response.text();
 		if (!res) {
 			throw "No respond"
 		}
 		console.log("parsing")
-		console.log(res)
+		
 		res = JSON.parse(res);
 		if (res.code != "NOT_LOGGED_IN"){
 			return res

@@ -80,8 +80,8 @@ export default class UserScreen extends React.Component {
 					form = (<LoginForm setLoginState={this.setLoginState.bind(this)}/>)
 				}
 				toggleRegisterLink = (
-					<Text 
-						style={{color: 'blue', textAlign: 'center'}}
+					<Text
+						style={{color: 'blue', textAlign: 'center', fontSize: 20}}
 						onPress={this.toggleRegistering.bind(this)}>
 						{this.state.registering ? "Login" : "Register"}
 					</Text>)
