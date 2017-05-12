@@ -8,6 +8,7 @@ import {
 	StyleSheet,
 	View,
 	Picker,
+	TouchableOpacity,
 	Dimensions
 } from 'react-native';
 import { Bar, StockLine } from 'react-native-pathjs-charts'
@@ -59,6 +60,7 @@ export default class ReportScreen extends React.Component {
 			months: [],
 			days: [],
 			dataAvailable: false,
+			showingPrices: false,
 			loaded: false
 		}
 		this.fetchReportData = this.fetchReportData.bind(this)
@@ -276,14 +278,29 @@ export default class ReportScreen extends React.Component {
 
 	calculateBill(kWh){
 		var pricesData = this.state.pricesData
-		for (var i = pricesData.length - 1; i >= 0; i--){
-			if (kWh >= pricesData[i].min){
-				bill = kWh * pricesData[i].price
-				var parts = bill.toString().split(".");
-			    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-			    return [parts.join("."), pricesData[i].price];
+		// for (var i = pricesData.length - 1; i >= 0; i--){
+		// 	if (kWh >= pricesData[i].min){
+		// 		bill = kWh * pricesData[i].price
+		// 		var parts = bill.toString().split(".");
+		// 	    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+		// 	    return [parts.join("."), pricesData[i].price];
+		// 	}
+		// }
+		var rank = 0;
+		var bill = 0;
+		while (kWh > 0){
+			if (kWh <= pricesData[rank].max){
+				bill += kWh * pricesData[rank].price
+				kWh = 0;
+			}
+			else {
+				bill += pricesData[rank].max * pricesData[rank].price
+				kWh -= pricesData[rank].max
 			}
 		}
+		var parts = bill.toString().split(".");
+	    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+	    return parts.join(".");
 		return [-1, -1]
 	}
 
@@ -386,8 +403,24 @@ export default class ReportScreen extends React.Component {
 		}
 		var billText = (<Text/>)
 		if (this.state.powerThisMonth > 0 && this.state.pricesData.length>0){
-			var costs = this.calculateBill(this.state.powerThisMonth)
-			billText = (<Text>Cost: {costs[0]} VND ({costs[1]} VND/kWh)</Text>)
+			billText = (<Text>Cost: {this.calculateBill(this.state.powerThisMonth)} VND</Text>)
+		}
+
+		var pricesTable = (<View/>)
+		if (this.state.pricesData.length > 0){
+			pricesTable = [
+				(<TouchableOpacity key={'toggle'} onPress={()=>this.setState({showingPrices: !this.state.showingPrices})}>
+					<Text style={{fontWeight:'bold'}}>{this.state.showingPrices?"Hide":"Show"} price table</Text>
+				</TouchableOpacity>)
+			]
+			if (this.state.showingPrices){
+				this.state.pricesData.map(data=>{
+					pricesTable.push(<View key={data.min} style={{flexDirection:'row'}}>
+						<Text>From {data.min} kWh to {data.max ? (data.max + " kWh") : "and above"}:</Text>
+						<Text style={{flex:1, textAlign:'right'}}>{data.price} VND</Text>
+					</View>)
+				})
+			}
 		}
 
 		var chartView = (<View/>)
@@ -410,6 +443,7 @@ export default class ReportScreen extends React.Component {
 										<Picker.Item key={i} label={chartType} value={i} />
 									)}
 								</Picker>
+								<Text style={{fontWeight:'bold'}}>Summary</Text>
 		    					<Text>This month's consumption: {this.state.powerThisMonth} kWh</Text>
 		    					{billText}
 		    				</View>)
@@ -434,6 +468,7 @@ export default class ReportScreen extends React.Component {
 	            <Button onPress={this.fetchReportData} title="Refresh" />
     			<Text>{this.state.loaded ? "": "Loading"}</Text>
     			{chartView}
+    			{pricesTable}
     			{this.state.suggestions.length > 0 ?
     				<Text style={{fontWeight:"bold", marginTop: 10}}>
     					Suggestions

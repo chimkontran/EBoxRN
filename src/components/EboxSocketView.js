@@ -26,7 +26,6 @@ export default class EboxSocketView extends React.Component {
 		this.state = {
 			height: 0,
 			isRenaming: false,
-			showNameInput: this.props.name ? false : true,
 			err: "",
 			name: this.props.name,
 			loaded: false
@@ -88,6 +87,12 @@ export default class EboxSocketView extends React.Component {
 	}
 
 	renameEboxSocket(){
+		if (this.state.newName.trim() == 'other'){
+			this.setState({
+				err: "Please choose another name"
+			})
+			return
+		}
 		Utils.makeEboxServerRequest('/Management/Names', 'POST', {
 			eboxID: this.state.eboxID,
 			socketNum: this.state.index,
@@ -132,14 +137,12 @@ export default class EboxSocketView extends React.Component {
 								if (name == "other"){
 									console.log(name)
 									this.setState({
-										showNameInput: true,
 										newName: ""
 									})
 								}
 								else {
 									this.setState({
 										newName: name,
-										showNameInput: false
 									})
 								}
 							}}>
@@ -147,7 +150,7 @@ export default class EboxSocketView extends React.Component {
 								<Picker.Item key={name} label={name} value={name} />
 							)}
 						</Picker>
-						{this.state.showNameInput ?
+						{currentOption == "other" ?
 							(<TextInput onChangeText={(text)=>{
 								this.setState({newName: text, err: ""})
 							}}>
