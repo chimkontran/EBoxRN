@@ -27,6 +27,7 @@ export default class LoginForm extends React.Component {
 		})
 		try{
 			let res = await Utils.loginEboxServer(this.state.email, this.state.password)
+			console.log(res)
 			if (res.status == "successful"){
 				this.props.setLoginState(true)
 			}
@@ -36,6 +37,7 @@ export default class LoginForm extends React.Component {
 				})
 			}
 		} catch(error) {
+			console.log(error)
 			this.setState({
 				errorMess: "Cannot connect"
 			})

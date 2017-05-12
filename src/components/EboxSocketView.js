@@ -26,11 +26,12 @@ export default class EboxSocketView extends React.Component {
 		this.state = {
 			height: 0,
 			isRenaming: false,
-			showNameInput: this.props.name == "",
+			showNameInput: this.props.name ? false : true,
 			err: "",
 			name: this.props.name,
 			loaded: false
 		}
+		
 		this.state = Object.assign(this.state, this.props.data)
 		this.switchSocket = this.switchSocket.bind(this)
 		this.switchSmartOffMode = this.switchSmartOffMode.bind(this)

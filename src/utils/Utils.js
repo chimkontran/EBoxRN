@@ -5,6 +5,13 @@ import {
 import Constants from 'eboxRN/src/Constants';
 
 async function makeEboxServerRequest(uri, method, params){
+	try {
+		var accessToken = await AsyncStorage.getItem('accessToken')
+		params['accessToken'] = JSON.parse(accessToken).value
+	}
+	catch(err){
+		console.log(err)
+	}
 	console.log("fetching " + uri)
 	try{
 		var paramsStr = "";
@@ -35,7 +42,8 @@ async function makeEboxServerRequest(uri, method, params){
 		console.log("parsing")
 		
 		res = JSON.parse(res);
-		if (res.code != "NOT_LOGGED_IN"){
+		console.log(res)
+		if (res.code != "TOKEN_INVALID"){
 			return res
 		}
 
@@ -44,7 +52,6 @@ async function makeEboxServerRequest(uri, method, params){
 			var credentials = await AsyncStorage.getItem('credentials');
 			credentials = JSON.parse(credentials)
 			if (credentials !== null){
-				console.log("asd")
 				return loginEboxServer(credentials.email, credentials.password)
 					.then(res => {
 						if (res.status == "successful") {
@@ -52,18 +59,18 @@ async function makeEboxServerRequest(uri, method, params){
 						}
 						else {
 							globalFunctions.setLoginState(false);
-							throw "NOT_LOGGED_IN"
+							throw "TOKEN_INVALID"
 						}
 					})
 			}
 			else {
 				globalFunctions.setLoginState(false);
-				throw "NOT_LOGGED_IN"
+				throw "TOKEN_INVALID"
 			}
 		}
 		catch(err){
 			globalFunctions.setLoginState(false);
-			throw "NOT_LOGGED_IN"
+			throw "TOKEN_INVALID"
 		}
 
 	} catch(error) {
@@ -73,18 +80,20 @@ async function makeEboxServerRequest(uri, method, params){
 
 function loginEboxServer(email, password){
 	var params = {email: email, password: password};
-	var _res;
 	return makeEboxServerRequest("/Users/Login", 'POST', params)
 		.then(res => {
-			_res = res;
 			if (res.status == "successful") {
-				console.log("xyz")
 				return AsyncStorage.setItem('credentials', JSON.stringify(params))
+				.then(()=>{
+					return AsyncStorage.setItem('accessToken', JSON.stringify(res.data.accessToken))
+				})
+				.then(()=>{
+					return res
+				})
 			}
-		})
-		.then(() => {
-			console.log("res:" + JSON.stringify(_res))
-			return _res
+			else {
+				return res
+			}
 		})
 }
 
