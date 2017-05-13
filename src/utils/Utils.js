@@ -10,9 +10,9 @@ async function makeEboxServerRequest(uri, method, params){
 		params['accessToken'] = JSON.parse(accessToken).value
 	}
 	catch(err){
-		console.log(err)
+		//console.log(err)
 	}
-	console.log("fetching " + uri)
+	//console.log("fetching " + uri)
 	try{
 		var paramsStr = "";
 		var isPOST = method == "POST"
@@ -39,10 +39,10 @@ async function makeEboxServerRequest(uri, method, params){
 		if (!res) {
 			throw "No respond"
 		}
-		console.log("parsing")
+		//console.log("parsing")
 		
 		res = JSON.parse(res);
-		console.log(res)
+		//console.log(res)
 		if (res.code != "TOKEN_INVALID"){
 			return res
 		}

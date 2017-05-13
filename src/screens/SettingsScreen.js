@@ -74,7 +74,7 @@ export default class SettingsScreen extends React.Component {
 			}
 		})
 		.catch(err=>{
-			console.log(err)
+			//console.log(err)
 			this.setState({error:"Cannot get data"})
 		})
 	}
@@ -145,7 +145,7 @@ export default class SettingsScreen extends React.Component {
 
 	render() {
 	    return (
-	    	<ScrollView style={{flex:1}}>
+	    	<ScrollView style={{flex:1, paddingTop: 20}}>
 	    		<Text style={{fontWeight:'bold'}}>Power Plan</Text>
 	    		<View style={styles.field}>
 	    			<Text>Max Session Time</Text>

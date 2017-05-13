@@ -59,7 +59,7 @@ export default class ScheduleScreen extends React.Component {
         // }
     }
     this.setState({});
-    console.log(this.state.objectData);
+    //console.log(this.state.objectData);
   }
 
   editSchedule(scheduleData){
@@ -87,7 +87,7 @@ export default class ScheduleScreen extends React.Component {
       }
 
 	    return (
-        <View style={{position:'relative', flex:1}}>
+        <View style={{position:'relative', flex:1, paddingTop: 20}}>
         <ScrollView>
           {fetchInformation}
         </ScrollView>

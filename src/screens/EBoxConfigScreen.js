@@ -42,7 +42,7 @@ export default class EBoxConfigScreen extends React.Component {
 			})
 		})
 		.catch(err => {
-			console.log(err)
+			//console.log(err)
 		})
 	}
 
@@ -126,7 +126,7 @@ export default class EBoxConfigScreen extends React.Component {
 		setTimeout(()=>{
 			BluetoothSerial.readFromDevice()
 			.then(data => {
-				console.log(data)
+				//console.log(data)
 				if (data.indexOf('TCP connection ready') >= 0){
 					BluetoothSerial.disconnect()
 					this.props.navigation.goBack()
@@ -163,21 +163,21 @@ export default class EBoxConfigScreen extends React.Component {
 	          	}}
 	        />)
 		var configBtDeviceView = (
-			<View>
+			<View style={{paddingTop: 20}}>
 				<Text>EBox key</Text>
 				<TextInput
 					onChangeText={(text)=>{this.setState({eboxKey:text})}}
-					>{this.state.eboxKey}</TextInput>
+					value={this.state.eboxKey}/>
 
 				<Text>Wifi SSID</Text>
 				<TextInput
 					onChangeText={(text)=>{this.setState({ssid:text})}}
-					>{this.state.ssid}</TextInput>
+					value={this.state.ssid}/>
 
 				<Text>Wifi password</Text>
 				<TextInput
 					onChangeText={(text)=>{this.setState({wifiPw:text})}}
-					>{this.state.wifiPw}</TextInput>
+					value={this.state.wifiPw}/>
 
 				<Button
 					disabled={

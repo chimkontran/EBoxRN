@@ -53,20 +53,20 @@ class RegisterForm extends React.Component {
 
 	render() {
 		return (
-			<View>
+			<View style={{paddingTop:20}}>
 				<Text style={styles.error}>{this.state.errorMess}</Text>
 
-				<TextInput
+				<TextInput style={{height:40}}
 					onChangeText={(val) => this.setState({email:val})}
 					placeholder="Email"
 				/>
 
-				<TextInput
+				<TextInput style={{height:40}}
 					onChangeText={(val) => this.setState({password:val})}
 					secureTextEntry={true} placeholder="Password"
 				/>
 
-				<TextInput
+				<TextInput style={{height:40}}
 					onChangeText={(val) => this.setState({password_confirm:val})}
 					secureTextEntry={true} placeholder="Confirm password"
 				/>
