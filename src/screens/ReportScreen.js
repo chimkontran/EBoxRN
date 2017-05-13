@@ -43,7 +43,7 @@ export default class ReportScreen extends React.Component {
 	constructor(props){
 		super(props)
 		this.state = {
-			numReportDays: 7,
+			numReportDays: '7',
 			data: [],
 			powerByHour: {},
 			powerByDay: {},
@@ -123,8 +123,8 @@ export default class ReportScreen extends React.Component {
 				label: ""
 			})
 		}
-		console.log(dataSource)
-		console.log(chartData)
+		//console.log(dataSource)
+		//console.log(chartData)
 		this.setState({
 			chartData: chartData,
 			chartTypeIndex: chartTypeIndex
@@ -144,15 +144,15 @@ export default class ReportScreen extends React.Component {
 
 		this.setState({
 			loaded: false,
-			numReportDays: numReportDays,
+			numReportDays: numReportDays.toString(),
 		})
 		var date = Moment()
 					.subtract(this.state.numReportDays,'d')
 					.format("YYYY-MM-DD")
-		console.log(date)
+		//console.log(date)
 		Utils.makeEboxServerRequest('/Reports', 'GET', {date: date})
 		.then(res => {
-			console.log(res)
+			//console.log(res)
 			if (res.successful){
 				var powerByHour = this.state.powerByHour,
 					powerByDay = this.state.powerByDay,
@@ -230,14 +230,14 @@ export default class ReportScreen extends React.Component {
 					data: res.data,
 					loaded: true
 				})
-				// console.log(this.state)
+				// //console.log(this.state)
 			}
 			else {
-				console.log(res.error)
+				//console.log(res.error)
 			}
 		})
 		.catch(err => {
-			console.log(err)
+			//console.log(err)
 		})
 	}
 
@@ -250,29 +250,29 @@ export default class ReportScreen extends React.Component {
 				})
 			}
 			else {
-				console.log(res.error)
+				//console.log(res.error)
 			}
 		})
 		.catch(err=>{
-			console.log(err)
+			//console.log(err)
 		})
 	}
 
 	fetchSuggestions(){
 		Utils.makeEboxServerRequest('/Reports/Suggestions', 'GET', {})
 		.then(res=>{
-			console.log(res)
+			//console.log(res)
 			if (res.successful){
 				this.setState({
 					suggestions: res.data
 				})
 			}
 			else {
-				console.log(res.error)
+				//console.log(res.error)
 			}
 		})
 		.catch(err=>{
-			console.log(err)
+			//console.log(err)
 		})
 	}
 
@@ -426,7 +426,6 @@ export default class ReportScreen extends React.Component {
 		var chartView = (<View/>)
 		if (this.state.loaded){
 			if (this.state.chartData.length > 0){
-				console.log(this.state.chartData)
 				chartView = (<View>
 		    					<Text>{this.state.chartTitle}</Text>
 		    					{this.state.chartTypeIndex < 3 ?
@@ -453,30 +452,32 @@ export default class ReportScreen extends React.Component {
 			}
 		}
 	    return (
-	    	<ScrollView>
-	    		<View style={{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-	    			<Text>Get report for the previous </Text>
-		    		<TextInput keyboardType='numeric'
-			    		onChangeText={(numReportDays)=>{
-			            	this.setState({numReportDays: numReportDays})
-			            }
-			        }>
-		            	{this.state.numReportDays}
-		            </TextInput>
-		            <Text> days</Text>
-	            </View>
-	            <Button onPress={this.fetchReportData} title="Refresh" />
-    			<Text>{this.state.loaded ? "": "Loading"}</Text>
-    			{chartView}
-    			{pricesTable}
-    			{this.state.suggestions.length > 0 ?
-    				<Text style={{fontWeight:"bold", marginTop: 10}}>
-    					Suggestions
-					</Text>
-    				:<Text/>}
-    			{this.state.suggestions.map(suggestion=>
-    				<Text key={suggestion._id}>{suggestion.message}</Text>
-				)}
-	    	</ScrollView>);
+	    	<View style={{paddingTop: 20, flex: 1}}>
+		    	<ScrollView>
+		    		<View style={{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+		    			<Text>Get report for the previous </Text>
+			    		<TextInput keyboardType='numeric'
+			    		style={{height: 40, width: 30}}
+				    		onChangeText={(numReportDays)=>{
+				            	this.setState({numReportDays: numReportDays})
+				            }}
+				            value={this.state.numReportDays}
+				        />
+			            <Text> days</Text>
+		            </View>
+		            <Button onPress={this.fetchReportData} title="Refresh" />
+	    			<Text>{this.state.loaded ? "": "Loading"}</Text>
+	    			{chartView}
+	    			{pricesTable}
+	    			{this.state.suggestions.length > 0 ?
+	    				<Text style={{fontWeight:"bold", marginTop: 10}}>
+	    					Suggestions
+						</Text>
+	    				:<Text/>}
+	    			{this.state.suggestions.map(suggestion=>
+	    				<Text key={suggestion._id}>{suggestion.message}</Text>
+					)}
+		    	</ScrollView>
+	    	</View>);
     }
 }

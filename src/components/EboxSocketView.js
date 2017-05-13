@@ -53,13 +53,13 @@ export default class EboxSocketView extends React.Component {
 			mode: this.state.mode == 0 ? 1 : 0
 		})
 		.then(res => {
-			console.log(res)
+			//console.log(res)
 			if (res.status == "successful"){
 				setTimeout(this.state.updateEboxesStatus, 3000)
 			}
 		})
 		.catch(err => {
-			console.log(err)
+			//console.log(err)
 		})
 	}
 
@@ -73,16 +73,16 @@ export default class EboxSocketView extends React.Component {
 			mode: !this.state.smartOffMode
 		})
 		.then(res=>{
-			console.log(res)
+			//console.log(res)
 			if (res.successful){
 
 			}
 			else {
-				console.log(res.error)
+				//console.log(res.error)
 			}
 		})
 		.catch(err=>{
-			console.log(err)
+			//console.log(err)
 		})
 	}
 
@@ -112,7 +112,7 @@ export default class EboxSocketView extends React.Component {
 			}
 		})
 		.catch(err => {
-			console.log(err)
+			//console.log(err)
 		})
 	}
 
@@ -135,7 +135,7 @@ export default class EboxSocketView extends React.Component {
 							selectedValue={currentOption}
 							onValueChange={(name) => {
 								if (name == "other"){
-									console.log(name)
+									//console.log(name)
 									this.setState({
 										newName: ""
 									})
@@ -151,10 +151,11 @@ export default class EboxSocketView extends React.Component {
 							)}
 						</Picker>
 						{currentOption == "other" ?
-							(<TextInput onChangeText={(text)=>{
-								this.setState({newName: text, err: ""})
+							(<TextInput value={this.state.newName}
+								style={{height: 40}}
+								onChangeText={(text)=>{
+								this.setState({newName: text, err: ""})								
 							}}>
-				            	{this.state.newName}
 				            </TextInput>)
 				            : (<View/>)
 						}

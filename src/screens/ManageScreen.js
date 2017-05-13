@@ -46,13 +46,13 @@ export default class ManageScreen extends React.Component
 	updateEboxesStatus(){
 		Utils.makeEboxServerRequest('/Management', 'GET', {})
 		.then(res => {
-			// console.log(res)
+			// //console.log(res)
 			this.setState({
 				eboxesDataSource: this.state.eboxesDataSource.cloneWithRows(res.data.eboxes || [])
 			})
 		})
 		.catch(err => {
-			console.log(err)
+			//console.log(err)
 		})
 	}
 
@@ -64,15 +64,16 @@ export default class ManageScreen extends React.Component
 
 	render() {
 	    return (
-	    	<View style={{paddingTop: 22, flex:1}}>
+	    	<View style={{paddingTop: 22, flex:1, backgroundColor: 'white'}}>
 	    		<ListView
 	    			style={{flex:-1}}
+	    			removeClippedSubviews={false}
 	    			enableEmptySections
 		          	dataSource={this.state.eboxesDataSource}
 		          	renderRow={this.renderEboxView}
 		        />
 		        <Button 
-		        	title="Add EBox" 
+		        	title="Config EBox" 
 		        	onPress={() => 
 		        		this.props.navigation.navigate('EBoxConfig') }
 	        		/>

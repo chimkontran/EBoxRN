@@ -37,7 +37,7 @@ export default class UserScreen extends React.Component {
 
 	setLoginState(loggedIn){
 		if (this.props.isPortal){
-			console.log("returning")
+			//console.log("returning")
 			Utils.globalFunctions.setLoginState(true)
 		}
 		else {
@@ -55,7 +55,7 @@ export default class UserScreen extends React.Component {
 				}
 			})
 			.catch(err => {
-				console.log(err)
+				//console.log(err)
 			})
 			.then(()=>{
 				this.setState({

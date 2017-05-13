@@ -22,9 +22,6 @@ const MainNavigator = TabNavigator({
 	tabBarOptions: {
 		activeBackgroundColor: "white",
 		inActiveBackgroundColor: "white",
-		style: {
-			backgroundColor: Constants.colors.darkPrimary
-		},
     	labelStyle: {
 		    fontSize: 11,
 		},

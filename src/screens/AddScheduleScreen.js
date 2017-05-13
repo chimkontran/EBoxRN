@@ -31,6 +31,7 @@ export default class AddScheduleScreen extends React.Component {
       date: "",
       status: "",
       repeatDays: [],
+      newRepeatDays: [],
       repeatDaysLabel: [],
       commands: [],
       isChoosingRepeatDay: false,
@@ -49,6 +50,9 @@ export default class AddScheduleScreen extends React.Component {
       scheduleID: navigationParams.data._id || "",
     })
     Object.assign(this.state, navigationParams.data)
+    if (!this.state.time){
+      this.state.time = Moment().format('YYYY-MM-DD HH:mm:ss')
+    }
     this._confirmRepeatDay()
     this.state.commands.map(command=>{
       if (!(command.eboxID in this.state.eboxCommands)){
@@ -65,7 +69,7 @@ export default class AddScheduleScreen extends React.Component {
       }
     })
     .catch(err => {
-      console.log(err)
+      ////console.log(err)
     })
   }
 
@@ -90,14 +94,14 @@ export default class AddScheduleScreen extends React.Component {
 
   addCommandView(){
     var notAddedEboxes = this.getNotScheduledEboxes();
-    console.log(notAddedEboxes)
+    ////console.log(notAddedEboxes)
     if (notAddedEboxes.length > 0){
       var eboxID = notAddedEboxes[0];
       var eboxName = this.getEboxName(eboxID)
       this.state.eboxCommands[eboxID] = [-1,-1,-1,-1]
       this.state.eboxCommandIdOrder.push(eboxID)
       this.setState({})
-      // console.log("added");
+      // ////console.log("added");
     }
   }
 
@@ -116,48 +120,28 @@ export default class AddScheduleScreen extends React.Component {
   _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
   _handleDatePicked = (date) => {
-    var stringDate = String(date);
-    this.setState({date: stringDate});
-    var sliced = this.state.date.split(" ");
-
-    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    var changedMonth = "";
-    for (var i = 0; i < months.length; i++)
-    {
-        if(sliced[1] == months[i])
-        {
-            if (i + 1 < 10)
-            {
-              changedMonth = "0" + String(i+1);
-            }
-            else {
-              changedMonth = String(i+1);
-            }
-        }
-    }
-    var datetime = sliced[3]+ "-" + changedMonth + "-" + sliced[2] + " " + sliced[4];
-    // console.log("Picked date time: " + datetime)
-    this.setState({time: datetime});
+    this.setState({time: Moment(date).format("YYYY-MM-DD HH:mm:ss")});
     this._hideDateTimePicker();
   };
 
   
   _getSchedule = async() => {
     let response = await Utils.makeEboxServerRequest('/Schedules', 'GET', {})
-    console.log(response['data'])
+    ////console.log(response['data'])
   }
 
   // {/* Modal Repeat Day */}
   _showRepeatDay = () => {
-      this.setState({isChoosingRepeatDay:true});
+      this.setState({isChoosingRepeatDay:true, newRepeatDays: this.state.repeatDays});
   }
 
   _dismissRepeatDay = () => {
-      this.setState({isChoosingRepeatDay:false, repeatDays: ""});
-      console.log("Repeat Days cancel: " + this.state.repeatDays);
+      this.setState({isChoosingRepeatDay:false});
+      ////console.log("Repeat Days cancel: " + this.state.repeatDays);
   }
 
   _confirmRepeatDay = () => {
+    this.state.repeatDays = this.state.newRepeatDays
     this.state.repeatDaysLabel = [];
     var daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     this.state.repeatDaysLabel = this.state.repeatDays.map(repeatDay=>daysInWeek[repeatDay])
@@ -167,7 +151,7 @@ export default class AddScheduleScreen extends React.Component {
   // remove a command
   removeCommand(eboxID){
     if (eboxID in this.state.eboxCommands){
-      console.log(eboxID)
+      ////console.log(eboxID)
       delete this.state.eboxCommands[eboxID]
       var index = this.state.eboxCommandIdOrder.indexOf(eboxID)
       this.state.eboxCommandIdOrder.splice(index, 1)
@@ -220,7 +204,7 @@ export default class AddScheduleScreen extends React.Component {
       }
 
     } catch(error) {
-      console.log("error: " + error);
+      ////console.log("error: " + error);
     }
   }
 
@@ -232,7 +216,7 @@ export default class AddScheduleScreen extends React.Component {
           this.props.navigation.state.params.refreshSchedules();
           this.props.navigation.goBack();
         }
-        // console.log(res);
+        // ////console.log(res);
       }
       catch(error)
       {
@@ -249,11 +233,11 @@ export default class AddScheduleScreen extends React.Component {
     }
 
     var notAddedEboxes = this.getNotScheduledEboxes();
-    console.log(this.state.eboxCommands)
-    console.log(this.state.eboxCommandIdOrder)
+    ////console.log(this.state.eboxCommands)
+    ////console.log(this.state.eboxCommandIdOrder)
 
     var deleteButton = (<View/>)
-    console.log(this.state.scheduleID)
+    ////console.log(this.state.scheduleID)
     if(this.state.scheduleID)
     {
       deleteButton = (
@@ -352,7 +336,7 @@ export default class AddScheduleScreen extends React.Component {
         {/* Show DAYS checkboxes*/}
         <DateTimePicker
           mode = 'datetime'
-          date={Moment(this.state.time).toDate()}
+          date={Moment(this.state.time, "YYYY-MM-DD HH:mm:ss").toDate()}
           isVisible={this.state.isDateTimePickerVisible}
           onConfirm={this._handleDatePicked}
           onCancel={this._hideDateTimePicker}
@@ -365,8 +349,8 @@ export default class AddScheduleScreen extends React.Component {
           <View style={{marginTop: 22}}>
 
             <CheckboxGroup
-            onSelect={(values) => {this.setState({repeatDays: values})}}
-            checked = {this.state.repeatDays}
+            onSelect={(values) => {this.setState({newRepeatDays: values})}}
+            checked = {this.state.newRepeatDays}
             items={[
                 {value: 0, label: 'Sunday'},
                 {value: 1, label: 'Monday'},
@@ -447,6 +431,7 @@ const styles = StyleSheet.create({
   input: {
     marginTop: 10,
     padding: 4,
+    height: 40,
     fontSize: 18
   }
 });

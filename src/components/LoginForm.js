@@ -27,7 +27,7 @@ export default class LoginForm extends React.Component {
 		})
 		try{
 			let res = await Utils.loginEboxServer(this.state.email, this.state.password)
-			console.log(res)
+			//console.log(res)
 			if (res.status == "successful"){
 				this.props.setLoginState(true)
 			}
@@ -37,7 +37,7 @@ export default class LoginForm extends React.Component {
 				})
 			}
 		} catch(error) {
-			console.log(error)
+			//console.log(error)
 			this.setState({
 				errorMess: "Cannot connect"
 			})
@@ -47,15 +47,15 @@ export default class LoginForm extends React.Component {
 
 	render() {
 		return (
-			<View>
+			<View style={{paddingTop:20}}>
 				<Text style={styles.error}>{this.state.errorMess}</Text>
 
-				<TextInput
+				<TextInput style={{height:40}}
 					onChangeText={ (text)=> this.setState({email:text}) }
 					placeholder="Email"
 				/>
 
-				<TextInput
+				<TextInput style={{height:40}}
 					onChangeText={ (text)=> this.setState({password:text}) }
 					placeholder="Password" secureTextEntry={true}
 				/>
