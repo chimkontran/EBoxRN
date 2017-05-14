@@ -74,7 +74,7 @@ export default class ManageScreen extends React.Component
 
 	render() {
 	    return (
-	    	<Container style={{paddingTop: 22, flex:1, backgroundColor: 'white'}}>
+	    	<Container style={{paddingTop: 22, flex:1}}>
 	    		<Content>
 			    	<View>
 				        <Button full transparent

@@ -290,7 +290,7 @@ export default class AddScheduleScreen extends React.Component {
               }
               
               return (
-                <View key={this.state.eboxCommandCounter++} style={{margin:20}}>
+                <View key={this.state.eboxCommandCounter++} style={{paddingLeft:15}}>
                   <Text style={{fontWeight:'bold'}}>Command {pickerIndex + 1}</Text>
                   <View style={{flexDirection:'row'}}>
                     <Picker mode="dropdown" iosHeader="Choose EBox"
@@ -313,9 +313,7 @@ export default class AddScheduleScreen extends React.Component {
                   <View style={{flexDirection:'row'}}>
                     {eboxCommand.map((mode,index)=>{
                       return (
-                        <View key={pickerIndex+index} style={{flex: 1, flexDirection:'row'}}>
-
-                          <Picker style={{flex:1}} mode="dropdown"
+                        <Picker key={index} style={{flex:1}} mode="dropdown"
                             iosHeader={"Socket mode"}
                             selectedValue={mode} onValueChange={(newMode) => {
                             this.state.eboxCommands[eboxID][index] = newMode
@@ -325,7 +323,6 @@ export default class AddScheduleScreen extends React.Component {
                             <Item label="Off" value={0} />
                             <Item label="On" value={1} />
                           </Picker>
-                        </View>
                       )})}
                   </View>
                 </View>

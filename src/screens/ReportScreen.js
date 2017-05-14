@@ -315,7 +315,7 @@ export default class ReportScreen extends React.Component {
 
 	render() {
 		let barChartOptions = {
-			width: SCREEN_WIDTH*0.8,
+			width: SCREEN_WIDTH*0.7,
 			height: 300,
 			margin: {
 				top: 20,
@@ -362,7 +362,7 @@ export default class ReportScreen extends React.Component {
 		}
 
 		let lineChartOptions = {
-			width: SCREEN_WIDTH*0.8,
+			width: SCREEN_WIDTH*0.7,
 			height: 300,
 			color: '#2980B9',
 			margin: {
@@ -463,15 +463,16 @@ export default class ReportScreen extends React.Component {
 		}
 	    return (
 	    	<View style={{paddingTop: 20, flex: 1}}>
-		    	<ScrollView>
+		    	<ScrollView style={{paddingLeft: 20, paddingRight:20}}>
 		            <Form>
 		                <Item inlineLabel>
-		                    <Label>Get report for the previous </Label>
+		                    <Label>Report for the previous</Label>
 		                    <Input keyboardType='numeric'
 				    			onChangeText={(numReportDays)=>{
 					            	this.setState({numReportDays: numReportDays})
 					            }}
 					            value={this.state.numReportDays}
+					            style={{width:30}}
 		                    	/>
 	                        <Label> days</Label>
 		                </Item>

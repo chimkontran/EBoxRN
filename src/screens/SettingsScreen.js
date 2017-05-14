@@ -157,7 +157,7 @@ export default class SettingsScreen extends React.Component {
 	    	<Container style={{flex:1, paddingTop: 20}}>
 	    		<Content>
 		    		<View>
-			    		<Form>
+			    		<Form style={{paddingLeft: 20, paddingRight:20}}>
 				    		<Text style={{fontWeight:'bold'}}>Power Plan</Text>
 				    		<Item>
 				    			<Label>Max Session Time</Label>
@@ -207,9 +207,9 @@ export default class SettingsScreen extends React.Component {
 				    				value={this.state.reportInterval}
 			    				/>
 		    				</Item>
+		    				<Text style={{color: this.state.error ? "red":'green'}}>
+		    					{this.state.error || this.state.mess}</Text>
 						</Form>
-		    			<Text style={{color: this.state.error ? "red":'green'}}>
-		    				{this.state.error || this.state.mess}</Text>
 		    			<Button onPress={this.updatePowerPlan} full transparent>
 		    				<Text>Save Power Plan</Text>
 						</Button>
