@@ -3,6 +3,7 @@ import {
 	ListView,
 	Image,
 	View,
+	Platform,
 	StyleSheet,
 } from 'react-native';
 import {
@@ -74,7 +75,7 @@ export default class ManageScreen extends React.Component
 
 	render() {
 	    return (
-	    	<Container style={{paddingTop: 22, flex:1}}>
+	    	<Container style={{paddingTop: (Platform.OS === 'ios') ? 40 : 0}}>
 	    		<Content>
 			    	<View>
 				        <Button full transparent

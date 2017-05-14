@@ -8,6 +8,7 @@ import {
   AsyncStorage,
   Text,
   ScrollView,
+  Platform,
 	Image,
   View
 } from 'react-native';
@@ -94,7 +95,7 @@ export default class ScheduleScreen extends React.Component {
 
 	    return (
         <Container>
-          <Content>
+          <Content style={{paddingTop: (Platform.OS === 'ios') ? 40 : 0}}>
             <ScrollView>
               {this.state.objectData.map((scheduleData,i)=>
                 <ListItem key={i}

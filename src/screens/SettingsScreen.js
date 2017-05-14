@@ -4,7 +4,8 @@ import {
 	TextInput,
 	Image,
 	StyleSheet,
-	View
+	View,
+	Platform
 } from 'react-native';
 import {
   Container,
@@ -154,7 +155,7 @@ export default class SettingsScreen extends React.Component {
 
 	render() {
 	    return (
-	    	<Container style={{flex:1, paddingTop: 20}}>
+	    	<Container style={{paddingTop: (Platform.OS === 'ios') ? 40 : 20}}>
 	    		<Content>
 		    		<View>
 			    		<Form style={{paddingLeft: 20, paddingRight:20}}>

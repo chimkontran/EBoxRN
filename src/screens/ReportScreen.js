@@ -6,7 +6,8 @@ import {
 	StyleSheet,
 	View,
 	TouchableOpacity,
-	Dimensions
+	Dimensions,
+	Platform
 } from 'react-native';
 import {
   Container,
@@ -462,7 +463,7 @@ export default class ReportScreen extends React.Component {
 			}
 		}
 	    return (
-	    	<View style={{paddingTop: 20, flex: 1}}>
+	    	<View style={{paddingTop: (Platform.OS === 'ios') ? 40 : 0}}>
 		    	<ScrollView style={{paddingLeft: 20, paddingRight:20}}>
 		            <Form>
 		                <Item inlineLabel>
