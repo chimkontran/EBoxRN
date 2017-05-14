@@ -105,9 +105,14 @@ const globalFunctions = {
 	setLoginState: function(){},
 }
 
+const globalVariables = {
+	MainNavigator: null
+}
+
 export default Utils = {
 	makeEboxServerRequest: makeEboxServerRequest,
 	loginEboxServer: loginEboxServer,
 	globalFunctions: globalFunctions,
+	globalVariables: globalVariables,
 	checkUserStatus: checkUserStatus
 }

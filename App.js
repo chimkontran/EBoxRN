@@ -2,7 +2,8 @@ import React from 'react';
 import {
 	AppRegistry,
 	View,
-	Button
+	Button,
+	Text
 } from 'react-native';
 
 import {
@@ -33,10 +34,12 @@ const MainNavigator = TabNavigator({
 		showLabel: true
 	},
 });
+
 MainNavigator.navigationOptions = {
 	title: 'EBox',
 	header: null
 }
+Utils.globalVariables.MainNavigator = MainNavigator
 
 const AppNavigator = StackNavigator({
 	Main: { screen: MainNavigator },
@@ -94,7 +97,7 @@ export default class eboxRN extends React.Component {
 				screen = (<Constants.screens.UserScreen isPortal={true}/>)
 			}
 			else {
-				screen = (<AppNavigator/>);
+				screen = (<AppNavigator ref={nav => { console.log(nav) }}/>);
 			}
 		}
 		return screen;
