@@ -419,14 +419,15 @@ export default class ReportScreen extends React.Component {
 		var pricesTable = (<View/>)
 		if (this.state.pricesData.length > 0){
 			pricesTable = [
-				(<TouchableOpacity key={'toggle'} onPress={()=>this.setState({showingPrices: !this.state.showingPrices})}>
+				(<Button transparent style={{marginLeft:-16.5}}
+					key={'toggle'} onPress={()=>this.setState({showingPrices: !this.state.showingPrices})}>
 					<Text style={{fontWeight:'bold'}}>{this.state.showingPrices?"Hide":"Show"} price table</Text>
-				</TouchableOpacity>)
+				</Button>)
 			]
 			if (this.state.showingPrices){
 				this.state.pricesData.map(data=>{
 					pricesTable.push(<View key={data.min} style={{flexDirection:'row'}}>
-						<Text>From {data.min} kWh to {data.max ? (data.max + " kWh") : "and above"}:</Text>
+						<Text>{data.min} kWh {data.max ? ("to " + data.max + " kWh") : "and above"}:</Text>
 						<Text style={{flex:1, textAlign:'right'}}>{data.price} VND</Text>
 					</View>)
 				})
@@ -463,36 +464,38 @@ export default class ReportScreen extends React.Component {
 			}
 		}
 	    return (
-	    	<View style={{paddingTop: (Platform.OS === 'ios') ? 40 : 0}}>
-		    	<ScrollView style={{paddingLeft: 20, paddingRight:20}}>
-		            <Form>
-		                <Item inlineLabel>
-		                    <Label>Report for the previous</Label>
-		                    <Input keyboardType='numeric'
-				    			onChangeText={(numReportDays)=>{
-					            	this.setState({numReportDays: numReportDays})
-					            }}
-					            value={this.state.numReportDays}
-					            style={{width:30}}
-		                    	/>
-	                        <Label> days</Label>
-		                </Item>
-		            </Form>
-		            <Button onPress={this.fetchReportData} full transparent>
-		            	<Text>Refresh</Text>
-	            	</Button>
-	    			<Text>{this.state.loaded ? "": "Loading"}</Text>
-	    			{chartView}
-	    			{pricesTable}
-	    			{this.state.suggestions.length > 0 ?
-	    				<Text style={{fontWeight:"bold", marginTop: 10}}>
-	    					Suggestions
-						</Text>
-	    				:<Text/>}
-	    			{this.state.suggestions.map(suggestion=>
-	    				<Text key={suggestion._id}>{suggestion.message}</Text>
-					)}
-		    	</ScrollView>
-	    	</View>);
+	    	<Container style={{paddingTop: (Platform.OS === 'ios') ? 40 : 0}}>
+		    	<Content>
+			    	<ScrollView style={{paddingLeft: 20, paddingRight:20}}>
+			            <Form>
+			                <Item inlineLabel>
+			                    <Label>Report of last</Label>
+			                    <Input keyboardType='numeric'
+					    			onChangeText={(numReportDays)=>{
+						            	this.setState({numReportDays: numReportDays})
+						            }}
+						            value={this.state.numReportDays}
+						            style={{width:30}}
+			                    	/>
+		                        <Label> days</Label>
+			                </Item>
+			            </Form>
+			            <Button onPress={this.fetchReportData} full transparent>
+			            	<Text>Refresh</Text>
+		            	</Button>
+		    			<Text>{this.state.loaded ? "": "Loading"}</Text>
+		    			{chartView}
+		    			{pricesTable}
+		    			{this.state.suggestions.length > 0 ?
+		    				<Text style={{fontWeight:"bold", marginTop: 10}}>
+		    					Suggestions
+							</Text>
+		    				:<Text/>}
+		    			{this.state.suggestions.map(suggestion=>
+		    				<Text key={suggestion._id}>{suggestion.message}</Text>
+						)}
+			    	</ScrollView>
+		    	</Content>
+	    	</Container>);
     }
 }

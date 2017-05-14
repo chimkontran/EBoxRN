@@ -36,10 +36,6 @@ export default class ManageScreen extends React.Component
 	}
 	constructor(props){
 		super(props);
-		// console.log(this.props.navigation.navigate)
-		this.props.navigation.navigate = function(routeName,params,action){
-			Utils.globalVariables.MainNavigator.navigationOptions.title=routeName
-		}
 		const eboxesDs = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 		this.state = {
 			eboxesDataSource: eboxesDs.cloneWithRows([]),

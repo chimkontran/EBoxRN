@@ -36,10 +36,8 @@ const MainNavigator = TabNavigator({
 });
 
 MainNavigator.navigationOptions = {
-	title: 'EBox',
 	header: null
 }
-Utils.globalVariables.MainNavigator = MainNavigator
 
 const AppNavigator = StackNavigator({
 	Main: { screen: MainNavigator },
