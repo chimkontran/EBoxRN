@@ -12,6 +12,20 @@ import {
   View
 } from 'react-native';
 
+import { 
+  Container, 
+  Content, 
+  Button,
+  List,
+  ListItem,
+  Item,
+  Icon, 
+  Left,
+  Body,
+  Right,
+  Fab 
+} from 'native-base';
+
 import Constants from 'eboxRN/src/Constants';
 import Utils from 'eboxRN/src/utils/Utils';
 
@@ -74,30 +88,36 @@ export default class ScheduleScreen extends React.Component {
       for (var i = 0; i < this.state.objectData.length; i++) {
         var scheduleData = this.state.objectData[i]
         fetchInformation.push(
-          <View key={i} style={{"paddingBottom": 30}}>
-            <TouchableOpacity onPress={this.editSchedule.bind(this, scheduleData)}>
-              <Text>Name: {scheduleData['name']}</Text>
-              <Text>Time: {scheduleData['time']}</Text>
-              <Text>Repeat Days: {
-                scheduleData['repeatDays'].map(repeatDay=>daysInWeek[repeatDay]+' ')
-              }</Text>
-            </TouchableOpacity>
-          </View>
+          <ListItem key={i} onPress={this.editSchedule.bind(this, scheduleData)}>
+              <Body>
+                <Text>Name: {scheduleData['name']}</Text>
+                <Text>Time: {scheduleData['time']}</Text>
+                <Text>Repeat Days: {
+                  scheduleData['repeatDays'].map(repeatDay=>daysInWeek[repeatDay]+' ')
+                }</Text>
+              </Body>
+              <Right>
+                  <Icon name="arrow-forward" />
+              </Right>
+          </ListItem>
         );
       }
 
 	    return (
         <View style={{position:'relative', flex:1, paddingTop: 20}}>
         <ScrollView>
-          {fetchInformation}
+          <List>
+            {fetchInformation}
+          </List>
         </ScrollView>
-          <TouchableOpacity style={styles.button}
-          onPress= {() => this.props.navigation.navigate('AddSchedule', {data: {}, refreshSchedules: this._getSchedule})}>
-            <Image
-              source={Constants.images.plusIcon}
-              style={styles.addButton}
-            />
-          </TouchableOpacity>
+          <Fab
+              active={true}
+              containerStyle={{ marginRight: 10 }}
+              style={{ backgroundColor: Constants.colors.primary }}
+              position="bottomRight"
+              onPress= {() => this.props.navigation.navigate('AddSchedule', {data: {}, refreshSchedules: this._getSchedule})}>
+              <Icon name="md-add" />
+          </Fab>
         </View>
 			);
     }

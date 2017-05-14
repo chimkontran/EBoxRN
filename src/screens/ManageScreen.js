@@ -4,9 +4,19 @@ import {
 	Image,
 	View,
 	StyleSheet,
-	Text,
-	Button
 } from 'react-native';
+import {
+  Container,
+  Content,
+  Picker,
+  Text,
+  Button,
+  Form,
+  Input,
+  Label,
+  Item,
+  Icon
+} from 'native-base';
 
 import Constants from 'eboxRN/src/Constants';
 import Utils from 'eboxRN/src/utils/Utils';
@@ -64,20 +74,23 @@ export default class ManageScreen extends React.Component
 
 	render() {
 	    return (
-	    	<View style={{paddingTop: 22, flex:1, backgroundColor: 'white'}}>
-	    		<ListView
-	    			style={{flex:-1}}
-	    			removeClippedSubviews={false}
-	    			enableEmptySections
-		          	dataSource={this.state.eboxesDataSource}
-		          	renderRow={this.renderEboxView}
-		        />
-		        <Button 
-		        	title="Config EBox" 
-		        	onPress={() => 
-		        		this.props.navigation.navigate('EBoxConfig') }
-	        		/>
-		        
-	    	</View>);
+	    	<Container style={{paddingTop: 22, flex:1, backgroundColor: 'white'}}>
+	    		<Content>
+			    	<View>
+				        <Button full transparent
+				        	onPress={() => 
+				        		this.props.navigation.navigate('EBoxConfig') }>
+			        		<Text>Config EBox</Text>
+			        	</Button>
+			    		<ListView
+			    			style={{flex:-1}}
+			    			removeClippedSubviews={false}
+			    			enableEmptySections
+				          	dataSource={this.state.eboxesDataSource}
+				          	renderRow={this.renderEboxView}
+				        />
+			    	</View>
+		    	</Content>
+	    	</Container>);
     }
 }

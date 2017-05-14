@@ -1,13 +1,22 @@
 import React from 'react';
 import {
-	Text,
 	ScrollView,
 	TextInput,
-	Button,
 	Image,
 	StyleSheet,
 	View
 } from 'react-native';
+import {
+  Container,
+  Content,
+  Text,
+  Button,
+  Form,
+  Input,
+  Label,
+  Item,
+  Icon
+} from 'native-base';
 
 import Constants from 'eboxRN/src/Constants';
 import Utils from 'eboxRN/src/utils/Utils';
@@ -145,70 +154,81 @@ export default class SettingsScreen extends React.Component {
 
 	render() {
 	    return (
-	    	<ScrollView style={{flex:1, paddingTop: 20}}>
-	    		<Text style={{fontWeight:'bold'}}>Power Plan</Text>
-	    		<View style={styles.field}>
-	    			<Text>Max Session Time</Text>
-	    			<TextInput keyboardType='numeric' style={{flex:1}}
-	    				onChangeText={(value)=>{
-		    				this.setState({
-		    					maxSessionTime: value
-		    				})
-	    				}}
-	    				value={this.state.maxSessionTime}
-    				/>
-    			</View>
-    			<View style={styles.field}>
-	    			<Text>Max Wattage</Text>
-	    			<TextInput keyboardType='numeric' style={{flex:1}}
-	    				onChangeText={(value)=>{
-		    				this.setState({
-		    					maxWattage: value
-		    				})
-	    				}}
-	    				value={this.state.maxWattage}
-    				/>
-    			</View>
-    			<View style={styles.field}>
-	    			<Text>Warning Interval</Text>
-	    			<TextInput keyboardType='numeric' style={{flex:1}}
-	    				onChangeText={(value)=>{
-		    				this.setState({
-		    					warningInterval: value
-		    				})
-	    				}}
-	    				value={this.state.warningInterval}
-    				/>
-    			</View>
-    			<View style={styles.field}>
-	    			<Text>Report Interval</Text>
-	    			<TextInput keyboardType='numeric' style={{flex:1}}
-	    				onChangeText={(value)=>{
-		    				this.setState({
-		    					reportInterval: value
-		    				})
-	    				}}
-	    				value={this.state.reportInterval}
-    				/>
-    			</View>
-    			<Text style={{color: this.state.error ? "red":'green'}}>
-    				{this.state.error || this.state.mess}</Text>
-    			<Button title="Save" onPress={this.updatePowerPlan}/>
-    			<View style={{marginTop: 100}}/>
-	    		<Button
-	    			onPress= {() => this.props.navigation.navigate('User') }
-	    			title= "User"
-	    		/>
-	    	</ScrollView>
+	    	<Container style={{flex:1, paddingTop: 20}}>
+	    		<Content>
+		    		<View>
+			    		<Form>
+				    		<Text style={{fontWeight:'bold'}}>Power Plan</Text>
+				    		<Item>
+				    			<Label>Max Session Time</Label>
+				    			<Input fixedLabel
+				    				keyboardType='numeric' style={{flex:1}}
+				    				onChangeText={(value)=>{
+					    				this.setState({
+					    					maxSessionTime: value
+					    				})
+				    				}}
+				    				value={this.state.maxSessionTime}
+			    				/>
+			    			</Item>
+			    			<Item>
+				    			<Label>Max Wattage</Label>
+				    			<Input fixedLabel
+				    				keyboardType='numeric' style={{flex:1}}
+				    				onChangeText={(value)=>{
+					    				this.setState({
+					    					maxWattage: value
+					    				})
+				    				}}
+				    				value={this.state.maxWattage}
+			    				/>
+			    			</Item>
+			    			<Item>
+				    			<Label>Warning Interval</Label>
+				    			<Input fixedLabel
+				    				keyboardType='numeric' style={{flex:1}}
+				    				onChangeText={(value)=>{
+					    				this.setState({
+					    					warningInterval: value
+					    				})
+				    				}}
+				    				value={this.state.warningInterval}
+			    				/>
+			    			</Item>
+			    			<Item>
+				    			<Label>Report Interval</Label>
+				    			<Input fixedLabel
+				    				keyboardType='numeric' style={{flex:1}}
+				    				onChangeText={(value)=>{
+					    				this.setState({
+					    					reportInterval: value
+					    				})
+				    				}}
+				    				value={this.state.reportInterval}
+			    				/>
+		    				</Item>
+						</Form>
+		    			<Text style={{color: this.state.error ? "red":'green'}}>
+		    				{this.state.error || this.state.mess}</Text>
+		    			<Button onPress={this.updatePowerPlan} full transparent>
+		    				<Text>Save Power Plan</Text>
+						</Button>
+						<Button full danger transparent
+							onPress={this.fetchPowerPlan}>
+		    				<Text>Revert</Text>
+						</Button>
+		    			<View style={{marginTop: 100}}/>
+			    		<Button full
+			    			onPress= {() => this.props.navigation.navigate('User') }>
+			    			<Text>User</Text>
+			    		</Button>
+		    		</View>
+		    	</Content>
+	    	</Container>
     	);
     }
 }
 
 const styles = {
-	field: {
-		flex: 1,
-		flexDirection:'row', 
-		justifyContent:'center',
-		alignItems:'center'
-	}
+
 }

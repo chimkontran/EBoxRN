@@ -4,15 +4,24 @@ import {
 	Image,
 	View,
 	StyleSheet,
-	Text,
 	Modal,
 	TextInput,
-	Button,
 	TouchableOpacity,
 	TouchableHighlight,
-	Picker,
 	Switch
 } from 'react-native';
+import {
+  Container,
+  Content,
+  Picker,
+  Text,
+  Button,
+  Form,
+  Input,
+  Label,
+  Item,
+  Icon
+} from 'native-base';
 
 const socketColors = ['yellow', 'red', 'blue', 'pink'];
 const offlineColor = 'grey';
@@ -130,8 +139,9 @@ export default class EboxSocketView extends React.Component {
 					onRequestClose={()=>{}}
 					>
 		         	<View style={{marginTop: 22}}>
-			            <Text>Edit socket/device name</Text>
+			            <Text>Edit device name</Text>
 			            <Picker
+			            	iosHeader={"Device name"}
 							selectedValue={currentOption}
 							onValueChange={(name) => {
 								if (name == "other"){
@@ -151,17 +161,23 @@ export default class EboxSocketView extends React.Component {
 							)}
 						</Picker>
 						{currentOption == "other" ?
-							(<TextInput value={this.state.newName}
-								style={{height: 40}}
-								onChangeText={(text)=>{
-								this.setState({newName: text, err: ""})								
-							}}>
-				            </TextInput>)
+							(<Form>
+								<Item>
+									<Input value={this.state.newName}
+										style={{height: 40}}
+										onChangeText={(text)=>{
+										this.setState({newName: text, err: ""})								
+									}}/>
+								</Item>
+							</Form>)
 				            : (<View/>)
 						}
 			            <Text>{this.state.err}</Text>
-			            <Button onPress={this.renameEboxSocket.bind(this)} title="Rename"/>
-			            <TouchableHighlight 
+			            <Button full transparent
+			            	onPress={this.renameEboxSocket.bind(this)}>
+			            	<Text>Rename</Text>
+		            	</Button>
+			            <Button full danger transparent 
 			            	onPress={()=>{
 			            		this.setState({
 			            			isRenaming: false, 
@@ -169,10 +185,10 @@ export default class EboxSocketView extends React.Component {
 			            		})
 			            	}}>
 			              <Text>Cancel</Text>
-			            </TouchableHighlight>
+			            </Button>
 		         	</View>
 		        </Modal>
-		        <Switch
+		        <Switch style={{alignSelf:'center'}}
 		        	onValueChange={this.switchSmartOffMode}
 		        	value={this.state.smartOffMode}
 		        />
@@ -198,6 +214,7 @@ export default class EboxSocketView extends React.Component {
 				            }
 				            style={{
 				            	width: "100%", 
+				            	marginTop: 5,
 				            	height: this.state.height,
 				            	backgroundColor: (this.state.mode == -1 ? 
 				            		offlineColor 

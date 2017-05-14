@@ -4,12 +4,22 @@ import {
 	Image,
 	View,
 	StyleSheet,
-	Text,
 	Modal,
 	TouchableHighlight,
-	Button,
 	TextInput
 } from 'react-native';
+import {
+	Container,
+	Content,
+	Picker,
+	Text,
+	Button,
+	Form,
+	Input,
+	Label,
+	Item,
+	Icon
+} from 'native-base';
 
 import EboxSocketView from 'eboxRN/src/components/EboxSocketView';
 import HoldableOpacity from 'eboxRN/src/components/HoldableOpacity';
@@ -69,18 +79,26 @@ export default class EboxControlsView extends React.Component {
 					onRequestClose={()=>{}}
 					>
 		         	<View style={{marginTop: 22}}>
-			            <Text>Enter new name for EBox</Text>
-			            <TextInput value={this.state.newName}
-			            style={{height: 40}}
-			            onChangeText={(text)=>{
-			            	this.setState({newName: text, err:""})
-			            }}>
-			            </TextInput>
-			            <Text>{this.state.err}</Text>
-			            <Button onPress={this.renameEbox.bind(this)} title="Rename"/>
-			            <TouchableHighlight onPress={()=>{this.setState({isRenaming: false})}}>
+		         		<Form>
+				            <Text>Enter new name for EBox</Text>
+		         			<Item>
+					            <Input value={this.state.newName}
+					            style={{height: 40}}
+					            onChangeText={(text)=>{
+					            	this.setState({newName: text, err:""})
+					            }}>
+					            </Input>
+				            </Item>
+			            	<Text>{this.state.err}</Text>
+		            	</Form>
+			            <Button full transparent
+			            	onPress={this.renameEbox.bind(this)}>
+			            	<Text>Rename</Text>
+		            	</Button>
+			            <Button full danger transparent
+			            	onPress={()=>{this.setState({isRenaming: false})}}>
 			              <Text>Cancel</Text>
-			            </TouchableHighlight>
+			            </Button>
 		         	</View>
 		        </Modal>
 				<HoldableOpacity duration={500} 

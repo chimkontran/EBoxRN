@@ -1,22 +1,34 @@
 import React, {Component} from 'react';
 import {
   StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Picker,
   AsyncStorage,
-  Button,
   Modal,
-  Text,
   ScrollView,
   View
 } from 'react-native';
-
+import {
+  Container,
+  Content,
+  ListItem, 
+  CheckBox,
+  Picker,
+  List,
+  Text,
+  Button,
+  Form,
+  Input,
+  Label,
+  Item,
+  Icon
+} from 'native-base';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
-import {CheckboxGroup} from 'react-native-material-design';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import Moment from 'moment';
+
+import Constants from 'eboxRN/src/Constants';
 import Utils from 'eboxRN/src/utils/Utils';
+
+const fullDaysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 export default class AddScheduleScreen extends React.Component {
 
@@ -53,7 +65,8 @@ export default class AddScheduleScreen extends React.Component {
     if (!this.state.time){
       this.state.time = Moment().format('YYYY-MM-DD HH:mm:ss')
     }
-    this._confirmRepeatDay()
+    var daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    this.state.repeatDaysLabel = this.state.repeatDays.map(repeatDay=>daysInWeek[repeatDay])
     this.state.commands.map(command=>{
       if (!(command.eboxID in this.state.eboxCommands)){
         this.state.eboxCommands[command.eboxID] = [-1,-1,-1,-1]
@@ -132,7 +145,9 @@ export default class AddScheduleScreen extends React.Component {
 
   // {/* Modal Repeat Day */}
   _showRepeatDay = () => {
-      this.setState({isChoosingRepeatDay:true, newRepeatDays: this.state.repeatDays});
+      var newRepeatDays = fullDaysInWeek.map((day, i)=>false)
+      this.state.repeatDays.map(day=>{newRepeatDays[day]=true})
+      this.setState({isChoosingRepeatDay:true, newRepeatDays: newRepeatDays});
   }
 
   _dismissRepeatDay = () => {
@@ -141,7 +156,10 @@ export default class AddScheduleScreen extends React.Component {
   }
 
   _confirmRepeatDay = () => {
-    this.state.repeatDays = this.state.newRepeatDays
+    this.state.repeatDays = []
+    this.state.newRepeatDays.map((checked,day)=>{
+      if (checked) this.state.repeatDays.push(day)
+    })
     this.state.repeatDaysLabel = [];
     var daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     this.state.repeatDaysLabel = this.state.repeatDays.map(repeatDay=>daysInWeek[repeatDay])
@@ -241,10 +259,10 @@ export default class AddScheduleScreen extends React.Component {
     if(this.state.scheduleID)
     {
       deleteButton = (
-          <TouchableOpacity style={styles.button, {backgroundColor: 'transparent'}} 
+          <Button style={{backgroundColor: 'transparent'}}
             onPress={this._deleteSchedule.bind(this)}>
             <Text style={{color:'#48BBEC', textAlign:'right', margin: 20}}>Delete schedule</Text>
-          </TouchableOpacity>
+          </Button>
       );
     }
 
@@ -267,9 +285,11 @@ export default class AddScheduleScreen extends React.Component {
               }
               
               return (
-                <View key={this.state.eboxCommandCounter++}>
+                <View key={this.state.eboxCommandCounter++} style={{margin:20}}>
+                  <Text style={{fontWeight:'bold'}}>Command {pickerIndex + 1}</Text>
                   <View style={{flexDirection:'row'}}>
-                    <Picker selectedValue={eboxID} style={{width: 300}}
+                    <Picker mode="dropdown" iosHeader="Choose EBox"
+                      selectedValue={eboxID} style={{width: 300}}
                       onValueChange={updateEboxCommand(eboxID,eboxCommand)}>
                       {eboxIDs.map(
                         (eboxIDChoice, i) => {
@@ -279,10 +299,10 @@ export default class AddScheduleScreen extends React.Component {
                         })
                       }
                     </Picker>
-                    <TouchableOpacity style={{width: 30, alignItems:'center',justifyContent:'center', marginLeft:20}}
-                        onPress={this.removeCommand.bind(this, eboxID)}>
-                        <Text style={{}}>X</Text>
-                    </TouchableOpacity>
+                    <Button danger transparent
+                      onPress={this.removeCommand.bind(this, eboxID)}>
+                        <Icon name='close' />
+                    </Button>
                   </View>
                   
                   <View style={{flexDirection:'row'}}>
@@ -290,26 +310,15 @@ export default class AddScheduleScreen extends React.Component {
                       return (
                         <View key={pickerIndex+index} style={{flex: 1, flexDirection:'row'}}>
 
-                          <Text style={{flex:1}} selectedValue={mode} onValueChange={(newMode) => {
-                            this.state.eboxCommands[eboxID][index] = newMode
-                            this.setState({})
-                          }}> Socket {index+1}</Text>
-                        </View>
-                      )})}
-                  </View>
-                  
-                  <View style={{flexDirection:'row'}}>
-                    {eboxCommand.map((mode,index)=>{
-                      return (
-                        <View key={pickerIndex+index} style={{flex: 1, flexDirection:'row'}}>
-
-                          <Picker style={{flex:1}} selectedValue={mode} onValueChange={(newMode) => {
+                          <Picker style={{flex:1}} mode="dropdown"
+                            iosHeader={"Socket mode"}
+                            selectedValue={mode} onValueChange={(newMode) => {
                             this.state.eboxCommands[eboxID][index] = newMode
                             this.setState({})
                           }}>
-                            <Picker.Item label="_" value={-1} />
-                            <Picker.Item label="Off" value={0} />
-                            <Picker.Item label="On" value={1} />
+                            <Item label="_" value={-1} />
+                            <Item label="Off" value={0} />
+                            <Item label="On" value={1} />
                           </Picker>
                         </View>
                       )})}
@@ -317,93 +326,96 @@ export default class AddScheduleScreen extends React.Component {
                 </View>
               )})
     return(
-      <ScrollView style={{flex:1}}>
-        {deleteButton}
-        {/* Input Name*/}
-        <Text style={{fontWeight:'bold'}}>Schedule name: </Text>
-        <TextInput style={styles.input}
-          value= {this.state.name}
-          onChangeText={ (text)=> this.setState({name:text}) }
-        />
+      <Container>
+        <Content>
+          <ScrollView style={{flex:1}}>
+            {deleteButton}
+            {/* Input Name*/}
+            <Form>
+                <Item fixedLabel>
+                    <Label>Schedule name: </Label>
+                    <Input value= {this.state.name}
+                      onChangeText={ (text)=> this.setState({name:text}) }/>
+                </Item>
+            </Form>
 
-        {/* Choose Time*/}
-        <TouchableOpacity
-          onPress={this._showDateTimePicker.bind(this)}>
-          <Text style={{fontWeight:'bold'}}>Choose time </Text>
-          <Text>{this.state.time}</Text>
-        </TouchableOpacity>
+            {/* Choose Time*/}
+            <Button transparent
+              onPress={this._showDateTimePicker.bind(this)}>
+              <Text style={{fontWeight:'bold'}}>Choose time </Text>
+              <Text>{this.state.time}</Text>
+            </Button>
 
-        {/* Show DAYS checkboxes*/}
-        <DateTimePicker
-          mode = 'datetime'
-          date={Moment(this.state.time, "YYYY-MM-DD HH:mm:ss").toDate()}
-          isVisible={this.state.isDateTimePickerVisible}
-          onConfirm={this._handleDatePicked}
-          onCancel={this._hideDateTimePicker}
-        />
+            <DateTimePicker
+              mode = 'datetime'
+              date={Moment(this.state.time, "YYYY-MM-DD HH:mm:ss").toDate()}
+              isVisible={this.state.isDateTimePickerVisible}
+              onConfirm={this._handleDatePicked}
+              onCancel={this._hideDateTimePicker}
+            />
 
-        <Modal
-          visible={this.state.isChoosingRepeatDay}
-          onRequestClose={()=>{}}>
+            {/* Show DAYS checkboxes*/}
+            <Modal
+              visible={this.state.isChoosingRepeatDay}
+              onRequestClose={()=>{}}>
 
-          <View style={{marginTop: 22}}>
+              <View style={{marginTop: 22}}>
+                  <List dataArray={this.state.newRepeatDays}
+                        renderRow={(checked, section,i) =>
+                          <ListItem onPress={()=>{
+                            this.state.newRepeatDays[i] = !checked; 
+                            this.setState({})
+                          }}>
+                                <CheckBox checked={checked} />
+                                <Text> {fullDaysInWeek[i]}</Text>
+                          </ListItem>
+                        }>
+                  </List>
 
-            <CheckboxGroup
-            onSelect={(values) => {this.setState({newRepeatDays: values})}}
-            checked = {this.state.newRepeatDays}
-            items={[
-                {value: 0, label: 'Sunday'},
-                {value: 1, label: 'Monday'},
-                {value: 2, label: 'Tuesday'},
-                {value: 3, label: 'Wednesday'},
-                {value: 4, label: 'Thursday'},
-                {value: 5, label: 'Friday'},
-                {value: 6, label: 'Saturday'}
-              ]} />
+                {/* Confirm Repeat*/}
+                <Button full
+                  onPress={this._confirmRepeatDay.bind(this)}>
+                    <Text>Confirm</Text>
+                </Button>
 
-            {/* Confirm Repeat*/}
-            <TouchableOpacity
-              style={styles.button}
-              onPress={this._confirmRepeatDay.bind(this)}>
-                <Text style={styles.buttonText}>Confirm</Text>
-            </TouchableOpacity>
+                {/* Cancel Repeat*/}
+                <Button full transparent danger
+                onPress={this._dismissRepeatDay.bind(this)}>
+                  <Text>Cancel</Text>
+                </Button>
+              </View>
+            </Modal>
 
-            {/* Cancel Repeat*/}
-            <TouchableOpacity style={styles.button}
-            onPress={this._dismissRepeatDay.bind(this)}>
-              <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
-
-        {/* Choose Repeat*/}
-        <TouchableOpacity
-          onPress={this._showRepeatDay.bind(this)}>
-          <Text style={{fontWeight:'bold'}}>Choose repeat days</Text>
-          <Text>{String(this.state.repeatDaysLabel)}</Text>
-        </TouchableOpacity>
+            {/* Choose Repeat*/}
+            <Button style={{marginTop: 10}} transparent
+              onPress={this._showRepeatDay.bind(this)}>
+              <Text style={{fontWeight:'bold'}}>Choose repeat days </Text>
+              <Text>{String(this.state.repeatDaysLabel)}</Text>
+            </Button>
 
 
-        {/* Modal for choosing Command*/}
-          <View style={{marginTop: 10}}>
+            {/* Modal for choosing Command*/}
+              <View style={{marginTop: 10}}>
 
-            {/* Choose Ebox, choose socket, choose mode*/}
-            {eboxCommandsView}
-          </View>
+                {/* Choose Ebox, choose socket, choose mode*/}
+                {eboxCommandsView}
+              </View>
 
-        {/* Show ebox commands*/}
-        <TouchableOpacity style={[styles.button, {backgroundColor:'transparent'}]}
-        onPress={this.addCommandView.bind(this)}>
-  				<Text style={[styles.buttonText, {color: '#3f51b5'}]}>Add command</Text>
-  			</TouchableOpacity>
+            {/* Show ebox commands*/}
+            <Button transparent
+            onPress={this.addCommandView.bind(this)}>
+      				<Text style={{color: Constants.colors.primary, fontWeight:'bold'}}>Add command</Text>
+      			</Button>
 
-        <Text style={styles.error}>{this.state.errorMess}</Text>
+            <Text style={styles.error}>{this.state.errorMess}</Text>
 
-        {/* Confirm Schedule */}
-        <TouchableOpacity style={styles.button} onPress = {this._confirmSchedule.bind(this)}>
-  				<Text style={styles.buttonText}>Confirm schedule</Text>
-  			</TouchableOpacity>
-      </ScrollView>
+            {/* Confirm Schedule */}
+            <Button full onPress = {this._confirmSchedule.bind(this)}>
+      				<Text style={styles.buttonText}>Confirm schedule</Text>
+      			</Button>
+          </ScrollView>
+        </Content>
+      </Container>
     );
   }
 }

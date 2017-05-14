@@ -1,16 +1,25 @@
 import React from 'react';
 import {
-	Text,
 	TextInput,
 	ScrollView,
-	Button,
 	Image,
 	StyleSheet,
 	View,
-	Picker,
 	TouchableOpacity,
 	Dimensions
 } from 'react-native';
+import {
+  Container,
+  Content,
+  Picker,
+  Text,
+  Button,
+  Form,
+  Input,
+  Label,
+  Item,
+  Icon
+} from 'native-base';
 import { Bar, StockLine } from 'react-native-pathjs-charts'
 import Moment from 'moment'
 
@@ -434,6 +443,7 @@ export default class ReportScreen extends React.Component {
 
 		    					<Text>Show data by: </Text>
 		    					<Picker
+		    						iosHeader="Show data by"
 									selectedValue={this.state.chartTypeIndex}
 									onValueChange={(chartTypeIndex) => {
 										this.updateChartData(chartTypeIndex)
@@ -454,18 +464,21 @@ export default class ReportScreen extends React.Component {
 	    return (
 	    	<View style={{paddingTop: 20, flex: 1}}>
 		    	<ScrollView>
-		    		<View style={{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-		    			<Text>Get report for the previous </Text>
-			    		<TextInput keyboardType='numeric'
-			    		style={{height: 40, width: 30}}
-				    		onChangeText={(numReportDays)=>{
-				            	this.setState({numReportDays: numReportDays})
-				            }}
-				            value={this.state.numReportDays}
-				        />
-			            <Text> days</Text>
-		            </View>
-		            <Button onPress={this.fetchReportData} title="Refresh" />
+		            <Form>
+		                <Item inlineLabel>
+		                    <Label>Get report for the previous </Label>
+		                    <Input keyboardType='numeric'
+				    			onChangeText={(numReportDays)=>{
+					            	this.setState({numReportDays: numReportDays})
+					            }}
+					            value={this.state.numReportDays}
+		                    	/>
+	                        <Label> days</Label>
+		                </Item>
+		            </Form>
+		            <Button onPress={this.fetchReportData} full transparent>
+		            	<Text>Refresh</Text>
+	            	</Button>
 	    			<Text>{this.state.loaded ? "": "Loading"}</Text>
 	    			{chartView}
 	    			{pricesTable}
