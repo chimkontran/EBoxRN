@@ -31,6 +31,9 @@ import Utils from 'eboxRN/src/utils/Utils';
 const fullDaysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 export default class AddScheduleScreen extends React.Component {
+  static navigationOptions = {
+    title: "Schedule"
+  }
 
   constructor(props){
     super(props);
@@ -259,10 +262,12 @@ export default class AddScheduleScreen extends React.Component {
     if(this.state.scheduleID)
     {
       deleteButton = (
-          <Button style={{backgroundColor: 'transparent'}}
+        <View  style={{flexDirection:'row', justifyContent:'flex-end'}}>
+          <Button transparent danger
             onPress={this._deleteSchedule.bind(this)}>
-            <Text style={{color:'#48BBEC', textAlign:'right', margin: 20}}>Delete schedule</Text>
+            <Text>Delete schedule</Text>
           </Button>
+          </View>
       );
     }
 
@@ -325,6 +330,7 @@ export default class AddScheduleScreen extends React.Component {
                   </View>
                 </View>
               )})
+    
     return(
       <Container>
         <Content>
@@ -360,17 +366,15 @@ export default class AddScheduleScreen extends React.Component {
               onRequestClose={()=>{}}>
 
               <View style={{marginTop: 22}}>
-                  <List dataArray={this.state.newRepeatDays}
-                        renderRow={(checked, section,i) =>
-                          <ListItem onPress={()=>{
-                            this.state.newRepeatDays[i] = !checked; 
-                            this.setState({})
-                          }}>
-                                <CheckBox checked={checked} />
-                                <Text> {fullDaysInWeek[i]}</Text>
-                          </ListItem>
-                        }>
-                  </List>
+                  {this.state.newRepeatDays.map((checked,day)=>
+                      <ListItem key={day} onPress={()=>{
+                          this.state.newRepeatDays[day] = !checked; 
+                          this.setState({})
+                      }}>
+                          <CheckBox checked={checked} />
+                          <Text> {fullDaysInWeek[day]}</Text>
+                      </ListItem>
+                  )}
 
                 {/* Confirm Repeat*/}
                 <Button full
@@ -407,11 +411,11 @@ export default class AddScheduleScreen extends React.Component {
       				<Text style={{color: Constants.colors.primary, fontWeight:'bold'}}>Add command</Text>
       			</Button>
 
-            <Text style={styles.error}>{this.state.errorMess}</Text>
+            <Text style={{color:'red'}}>{this.state.errorMess}</Text>
 
             {/* Confirm Schedule */}
             <Button full onPress = {this._confirmSchedule.bind(this)}>
-      				<Text style={styles.buttonText}>Confirm schedule</Text>
+      				<Text>Confirm schedule</Text>
       			</Button>
           </ScrollView>
         </Content>
@@ -427,17 +431,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     marginTop: 10,
     justifyContent: 'center'
-  },
-
-  buttonText: {
-    fontSize: 22,
-    color: '#FFF',
-    alignSelf: 'center'
-  },
-
-    error: {
-    color: 'red',
-    paddingTop: 10
   },
 
   input: {
